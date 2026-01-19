@@ -393,7 +393,6 @@ p {
 }
 
 .sidebar.collapsed .sidebar-title {
-    opacity: 0;
     display: none;
 }
 
@@ -462,7 +461,6 @@ p {
 }
 
 .sidebar.collapsed .sidebar-item span {
-    opacity: 0;
     display: none;
 }
 
