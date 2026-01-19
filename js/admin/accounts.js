@@ -469,8 +469,10 @@
             permissions
         };
         
+        // Use different field name for password based on operation type
         if (password) {
-            accountData[currentEditAccount ? 'newPassword' : 'password'] = password;
+            const passwordField = currentEditAccount ? 'newPassword' : 'password';
+            accountData[passwordField] = password;
         }
         
         try {
