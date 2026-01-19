@@ -106,8 +106,14 @@ const RateLimit = (function() {
         data.lastAttempt = new Date().toISOString();
         
         // Determine lockout duration based on attempts
-        const lockoutRule = LOCKOUT_RULES.find(rule => data.attempts <= rule.attempts) || 
-                           LOCKOUT_RULES[LOCKOUT_RULES.length - 1];
+        // Find the appropriate rule for the current attempt count
+        let lockoutRule = LOCKOUT_RULES[0]; // Default to first rule
+        for (let i = LOCKOUT_RULES.length - 1; i >= 0; i--) {
+            if (data.attempts >= LOCKOUT_RULES[i].attempts) {
+                lockoutRule = LOCKOUT_RULES[i];
+                break;
+            }
+        }
         
         // Apply lockout if threshold reached
         if (data.attempts >= 5) {

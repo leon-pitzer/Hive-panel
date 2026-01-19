@@ -80,10 +80,18 @@ const Auth = (function() {
     }
     
     /**
-     * Generates a random session ID
+     * Generates a cryptographically secure random session ID
      * @returns {string} Random session ID
      */
     function generateSessionId() {
+        // Use Web Crypto API for better security
+        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+            const array = new Uint32Array(3);
+            crypto.getRandomValues(array);
+            return 'session_' + Array.from(array).map(n => n.toString(36)).join('_') + 
+                   '_' + Date.now().toString(36);
+        }
+        // Fallback to Math.random() if crypto API not available
         return 'session_' + Math.random().toString(36).substr(2, 9) + 
                '_' + Date.now().toString(36);
     }

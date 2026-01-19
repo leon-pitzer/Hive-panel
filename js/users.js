@@ -87,6 +87,8 @@ const Users = (function() {
             
             if (password.length < 6) {
                 console.error('Password must be at least 6 characters long');
+                // NOTE: For production, consider increasing to 8-12 characters
+                // and adding complexity requirements (uppercase, lowercase, numbers, special chars)
                 return false;
             }
             
