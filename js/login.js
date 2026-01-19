@@ -56,9 +56,18 @@
                 return;
             }
             
-            // Verify reCAPTCHA
-            const recaptchaResponse = grecaptcha.getResponse();
-            if (!recaptchaResponse) {
+            // Verify reCAPTCHA (if available)
+            let recaptchaResponse = null;
+            if (typeof grecaptcha !== 'undefined' && grecaptcha.getResponse) {
+                try {
+                    recaptchaResponse = grecaptcha.getResponse();
+                } catch (e) {
+                    console.warn('reCAPTCHA not available:', e);
+                }
+            }
+            
+            // Only require reCAPTCHA if it's loaded
+            if (typeof grecaptcha !== 'undefined' && !recaptchaResponse) {
                 showError('Bitte bestätigen Sie, dass Sie kein Roboter sind.');
                 return;
             }
@@ -88,7 +97,15 @@
                 const rateLimitStatus = RateLimit.recordFailedAttempt(username);
                 
                 setLoading(false);
-                grecaptcha.reset(); // Reset reCAPTCHA
+                
+                // Reset reCAPTCHA if available
+                if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
+                    try {
+                        grecaptcha.reset();
+                    } catch (e) {
+                        console.warn('Could not reset reCAPTCHA:', e);
+                    }
+                }
                 
                 if (rateLimitStatus.isLocked) {
                     const message = RateLimit.getLockoutMessage(username);

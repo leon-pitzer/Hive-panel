@@ -54,7 +54,7 @@ cd Hive-panel
 <div class="g-recaptcha" data-sitekey="HIER_IHREN_SITE_KEY_EINFÜGEN"></div>
 ```
 
-**Hinweis**: Der aktuelle Test-Schlüssel (`6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`) funktioniert nur für Tests und akzeptiert jede Eingabe.
+**Hinweis**: Der aktuelle Test-Schlüssel (`6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`) funktioniert nur für Tests und akzeptiert jede Eingabe. Die Anwendung funktioniert auch ohne reCAPTCHA (falls CDN blockiert ist), jedoch wird dann kein Bot-Schutz angewendet.
 
 ### 3. Website starten
 
@@ -128,9 +128,12 @@ Hive-panel/
 │   ├── users.js           # Benutzerverwaltung mit bcrypt
 │   ├── ratelimit.js       # Rate-Limiting-System
 │   └── login.js           # Login-Logik mit reCAPTCHA
+├── lib/
+│   └── bcrypt.js          # bcrypt.js Bibliothek (lokal)
 ├── data/                  # Datenverzeichnis (automatisch erstellt)
 │   └── users.json         # Benutzerdaten (im .gitignore)
 ├── .gitignore             # Git-Ausschlüsse
+├── package.json           # NPM Konfiguration
 └── README.md              # Diese Datei
 ```
 
@@ -198,7 +201,7 @@ Benötigte Browser-Features:
 - **HTML5**: Semantische Struktur
 - **CSS3**: Modernes Styling (CSS Variables, Grid, Flexbox)
 - **JavaScript (ES6+)**: Moderne JavaScript-Features
-- **bcrypt.js**: Passwort-Hashing (CDN)
+- **bcrypt.js**: Passwort-Hashing (lokal eingebunden)
 - **Google reCAPTCHA v2**: Bot-Schutz
 - **LocalStorage API**: Client-seitige Datenspeicherung
 
