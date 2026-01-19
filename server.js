@@ -27,6 +27,7 @@ const { sessionValidation } = require('./middleware/sessionValidation');
 // Import routes
 const authRoutes = require('./routes/auth');
 const accountRoutes = require('./routes/account');
+const adminRoutes = require('./routes/admin');
 const { ensureDefaultAdmin } = require('./routes/users');
 
 // Validate environment variables
@@ -137,6 +138,7 @@ if (process.env.NODE_ENV === 'production') {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/admin', adminRoutes);
 
 // CSRF token endpoint
 app.get('/api/csrf-token', csrfProtection, (req, res) => {
