@@ -473,10 +473,6 @@ p {
     padding: var(--spacing-md);
 }
 
-.sidebar.collapsed .sidebar-toggle {
-    /* Ensure toggle button is visible and prominent when collapsed */
-    display: flex;
-}
 
 .sidebar-item span {
     transition: opacity var(--transition-fast);
@@ -1083,7 +1079,6 @@ input:focus {
     height: 18px;
 }
 
-/* ===== Sidebar User Info ===== */
 /* ===== Account Settings Grid ===== */
 .account-settings-grid {
     display: grid;
