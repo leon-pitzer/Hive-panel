@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hive Panel - Login</title>
+    
+    <!-- KRITISCH: Dark Mode VOR CSS laden -->
+    <script>
+        (function() {
+            const darkMode = localStorage.getItem('hive-panel-dark-mode') === 'true';
+            if (darkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -56,9 +67,27 @@
         </div>
     </div>
     
+    <!-- Cookie Banner -->
+    <div id="cookie-banner" class="cookie-banner">
+        <div class="cookie-banner-content">
+            <div class="cookie-banner-text">
+                <i data-lucide="cookie"></i>
+                <div>
+                    <h4>Cookies</h4>
+                    <p>Diese Website verwendet Cookies, um Ihre Sitzung zu verwalten und Ihre Präferenzen zu speichern. Durch die Nutzung dieser Website stimmen Sie der Verwendung von Cookies zu.</p>
+                </div>
+            </div>
+            <button id="cookie-accept-btn" class="btn btn-primary">
+                <i data-lucide="check"></i>
+                <span>Cookies akzeptieren</span>
+            </button>
+        </div>
+    </div>
+    
     <script src="js/auth.js"></script>
     <script src="js/darkmode.js"></script>
     <script src="js/password-toggle.js"></script>
+    <script src="js/cookie-banner.js"></script>
     <script src="js/login.js"></script>
     <script>
         // Initialize Lucide icons

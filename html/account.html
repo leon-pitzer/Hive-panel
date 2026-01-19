@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hive Panel - Account-Einstellungen</title>
+    
+    <!-- KRITISCH: Dark Mode VOR CSS laden -->
+    <script>
+        (function() {
+            const darkMode = localStorage.getItem('hive-panel-dark-mode') === 'true';
+            if (darkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    
     <link rel="stylesheet" href="../styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -105,7 +116,7 @@
                         </div>
                         
                         <!-- Password Change -->
-                        <div class="dashboard-card full-width">
+                        <div class="dashboard-card">
                             <h3><i data-lucide="lock" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Passwort ändern</h3>
                             <form id="password-form" class="account-form">
                                 <div class="form-group">

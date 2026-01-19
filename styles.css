@@ -396,6 +396,10 @@ p {
     display: none;
 }
 
+.sidebar.collapsed .sidebar-logo {
+    justify-content: center;
+}
+
 .sidebar-toggle {
     background: transparent;
     border: none;
@@ -1057,7 +1061,6 @@ input:focus {
 /* ===== Sidebar User Info ===== */
 .sidebar-user-info {
     padding: var(--spacing-md) var(--spacing-lg);
-    border-top: 1px solid #e2e8f0;
     display: flex;
     align-items: center;
     gap: var(--spacing-md);
@@ -1092,7 +1095,7 @@ input:focus {
 /* ===== Account Settings Grid ===== */
 .account-settings-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-xl);
 }
 
@@ -1104,8 +1107,94 @@ input:focus {
     .account-settings-grid {
         grid-template-columns: 1fr;
     }
+}
+
+@media (min-width: 769px) and (max-width: 1200px) {
+    .account-settings-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ===== Cookie Banner ===== */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    padding: var(--spacing-lg);
+    transform: translateY(100%);
+    transition: transform var(--transition-base);
+    z-index: 2000;
+}
+
+.cookie-banner.show {
+    transform: translateY(0);
+}
+
+.cookie-banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+    flex-wrap: wrap;
+}
+
+.cookie-banner-text {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    flex: 1;
+    min-width: 300px;
+}
+
+.cookie-banner-text i {
+    width: 24px;
+    height: 24px;
+    color: var(--primary-color);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.cookie-banner-text h4 {
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cookie-banner-text p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+#cookie-accept-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+    .cookie-banner {
+        padding: var(--spacing-md);
+    }
     
-    .account-settings-grid .full-width {
-        grid-column: 1;
+    .cookie-banner-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-md);
+    }
+    
+    .cookie-banner-text {
+        min-width: auto;
+    }
+    
+    #cookie-accept-btn {
+        width: 100%;
     }
 }

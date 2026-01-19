@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hive Panel - Dashboard</title>
+    
+    <!-- KRITISCH: Dark Mode VOR CSS laden -->
+    <script>
+        (function() {
+            const darkMode = localStorage.getItem('hive-panel-dark-mode') === 'true';
+            if (darkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
