@@ -77,7 +77,26 @@
                     <p>Diese Website verwendet Cookies, um Ihre Sitzung zu verwalten und Ihre Präferenzen zu speichern. Durch die Nutzung dieser Website stimmen Sie der Verwendung von Cookies zu.</p>
                 </div>
             </div>
-            <button id="cookie-accept-btn" class="btn btn-primary">
+            <div class="cookie-banner-buttons">
+                <button id="cookie-reject-btn" class="btn btn-secondary">
+                    <i data-lucide="x"></i>
+                    <span>Ablehnen</span>
+                </button>
+                <button id="cookie-accept-btn" class="btn btn-primary">
+                    <i data-lucide="check"></i>
+                    <span>Akzeptieren</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cookie Blocker Overlay -->
+    <div id="cookie-blocker-overlay" class="cookie-blocker-overlay" style="display: none;">
+        <div class="cookie-blocker-content">
+            <i data-lucide="alert-circle"></i>
+            <h3>Cookies erforderlich</h3>
+            <p>Diese Website benötigt Cookies, um zu funktionieren. Bitte akzeptieren Sie die Cookies, um fortzufahren.</p>
+            <button id="cookie-blocker-accept-btn" class="btn btn-primary">
                 <i data-lucide="check"></i>
                 <span>Cookies akzeptieren</span>
             </button>

@@ -1182,9 +1182,78 @@ input:focus {
     line-height: 1.5;
 }
 
-#cookie-accept-btn {
+.cookie-banner-buttons {
+    display: flex;
+    gap: var(--spacing-md);
     flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.cookie-banner-buttons .btn {
     white-space: nowrap;
+}
+
+/* Cookie Blocker Overlay */
+.cookie-blocker-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+}
+
+.cookie-blocker-content {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-2xl);
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow-xl);
+    animation: fadeInScale 0.3s ease-out;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.cookie-blocker-content i {
+    width: 48px;
+    height: 48px;
+    color: var(--warning);
+    margin: 0 auto var(--spacing-lg);
+}
+
+.cookie-blocker-content h3 {
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.cookie-blocker-content p {
+    margin: 0 0 var(--spacing-xl) 0;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.cookie-blocker-content .btn {
+    min-width: 200px;
 }
 
 @media (max-width: 768px) {
@@ -1202,7 +1271,25 @@ input:focus {
         min-width: auto;
     }
     
-    #cookie-accept-btn {
+    .cookie-banner-buttons {
+        flex-direction: column;
         width: 100%;
+    }
+    
+    .cookie-banner-buttons .btn {
+        width: 100%;
+    }
+    
+    .cookie-blocker-overlay {
+        padding: var(--spacing-md);
+    }
+    
+    .cookie-blocker-content {
+        padding: var(--spacing-xl);
+    }
+    
+    .cookie-blocker-content .btn {
+        width: 100%;
+        min-width: auto;
     }
 }
