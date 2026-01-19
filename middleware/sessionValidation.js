@@ -14,7 +14,8 @@ const RESTART_TOKEN = generateRestartToken();
  * @returns {string} Restart token
  */
 function generateRestartToken() {
-    return `restart_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    const crypto = require('crypto');
+    return `restart_${Date.now()}_${crypto.randomBytes(16).toString('hex')}`;
 }
 
 /**

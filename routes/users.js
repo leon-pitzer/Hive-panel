@@ -99,7 +99,6 @@ async function ensureDefaultAdmin() {
                 
                 return {
                     username: 'admin',
-                    password: password,
                     created: true
                 };
             } else {

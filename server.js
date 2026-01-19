@@ -117,9 +117,15 @@ app.get('/api/recaptcha-config', (req, res) => {
 
 // Serve index.html for root
 app.get('/', (req, res) => {
-    // Redirect to dashboard if already authenticated
-    if (req.session && req.session.userId) {
-        return res.redirect('/dashboard.html');
+    // Redirect to dashboard if already authenticated and session is valid
+    if (req.session && req.session.userId && req.session.lastActivity) {
+        const now = Date.now();
+        const inactiveTime = now - req.session.lastActivity;
+        
+        // Only redirect if session is still active (not timed out)
+        if (inactiveTime < config.sessionTimeout.inactivityTimeout) {
+            return res.redirect('/dashboard.html');
+        }
     }
     res.sendFile(path.join(__dirname, 'index.html'));
 });

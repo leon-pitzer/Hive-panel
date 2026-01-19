@@ -29,6 +29,7 @@ module.exports = {
     rateLimit: {
         windowMs: 15 * 60 * 1000, // 15 minutes
         max: 5, // 5 requests per window
+        maxLoginAttempts: 5, // Maximum login attempts before lockout
         message: 'Zu viele Login-Versuche. Bitte versuchen Sie es später erneut.',
         standardHeaders: true,
         legacyHeaders: false,

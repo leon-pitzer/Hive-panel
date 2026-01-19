@@ -126,7 +126,7 @@ router.post('/login',
                 });
 
                 // Calculate remaining attempts
-                const remainingAttempts = Math.max(0, 5 - attemptInfo.attempts);
+                const remainingAttempts = Math.max(0, config.rateLimit.maxLoginAttempts - attemptInfo.attempts);
                 
                 res.status(401).json({
                     success: false,

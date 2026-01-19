@@ -140,8 +140,14 @@ async function updateJsonFile(filePath, updateFn, defaultValue = {}) {
         });
 
         try {
-            // Read current data
-            const currentData = await readJsonFile(filePath, defaultValue);
+            // Read current data directly (without using readJsonFile to avoid nested locks)
+            let currentData;
+            try {
+                const fileContent = await fs.readFile(filePath, 'utf8');
+                currentData = JSON.parse(fileContent);
+            } catch (err) {
+                currentData = defaultValue;
+            }
 
             // Apply update function
             const updatedData = updateFn(currentData);
