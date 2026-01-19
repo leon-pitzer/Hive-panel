@@ -66,6 +66,14 @@
                 }
             });
         });
+        
+        // Account button navigation
+        const accountButton = document.getElementById('sidebar-account-button');
+        if (accountButton) {
+            accountButton.addEventListener('click', function() {
+                window.location.href = '/account.html';
+            });
+        }
     });
     
     /**

@@ -37,17 +37,13 @@
                     <i data-lucide="layout-dashboard"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/account.html" class="sidebar-item active">
-                    <i data-lucide="user-cog"></i>
-                    <span>Account-Einstellungen</span>
-                </a>
             </nav>
             
             <div class="sidebar-footer">
-                <div class="sidebar-user-info">
-                    <i data-lucide="user"></i>
-                    <span class="user-name" id="sidebar-username-display"></span>
-                </div>
+                <button id="sidebar-account-button" class="sidebar-item sidebar-account active">
+                    <i data-lucide="user-circle"></i>
+                    <span id="sidebar-username-display"></span>
+                </button>
                 <button id="sidebar-logout-button" class="sidebar-item sidebar-logout">
                     <i data-lucide="log-out"></i>
                     <span>Abmelden</span>
