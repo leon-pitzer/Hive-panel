@@ -140,7 +140,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': csrfToken
+                    'CSRF-Token': csrfToken
                 },
                 credentials: 'same-origin'
             });
@@ -225,7 +225,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': csrfToken
+                    'CSRF-Token': csrfToken
                 },
                 credentials: 'same-origin',
                 body: JSON.stringify({ reason })
