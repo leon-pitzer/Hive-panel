@@ -48,6 +48,8 @@
     
     /**
      * Check if user has required permissions
+     * NOTE: This is client-side validation only for UX.
+     * All actual permission enforcement happens on the server.
      */
     async function checkPermissions() {
         if (typeof Permissions === 'undefined') {
@@ -436,7 +438,7 @@
         };
         
         if (password) {
-            accountData.password = password;
+            accountData[currentEditAccount ? 'newPassword' : 'password'] = password;
         }
         
         try {
