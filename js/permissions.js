@@ -139,6 +139,9 @@ const Permissions = (function() {
             if (!hasAccess) {
                 el.style.display = 'none';
                 el.setAttribute('data-permission-hidden', 'true');
+            } else {
+                el.style.display = '';
+                el.removeAttribute('data-permission-hidden');
             }
         });
     }
