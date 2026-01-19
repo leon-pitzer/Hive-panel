@@ -54,6 +54,50 @@
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
 }
 
+/* ===== Dark Mode Variables ===== */
+[data-theme="dark"] {
+    --primary-color: #60a5fa;
+    --primary-hover: #3b82f6;
+    --primary-dark: #2563eb;
+    --secondary-color: #94a3b8;
+    --secondary-hover: #cbd5e1;
+    
+    --background: #0f172a;
+    --surface: #1e293b;
+    --surface-hover: #334155;
+    
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-light: #94a3b8;
+    
+    --success: #10b981;
+    --error: #f87171;
+    --warning: #fbbf24;
+    --info: #60a5fa;
+}
+
+[data-theme="dark"] .sidebar,
+[data-theme="dark"] .dashboard-header,
+[data-theme="dark"] .dashboard-footer {
+    border-color: #334155;
+}
+
+[data-theme="dark"] .form-group input {
+    border-color: #475569;
+}
+
+[data-theme="dark"] .info-message {
+    background: #1e3a8a;
+    color: #93c5fd;
+    border-color: #1e40af;
+}
+
+[data-theme="dark"] .error-message {
+    background: #7f1d1d;
+    color: #fca5a5;
+    border-color: #991b1b;
+}
+
 /* ===== Reset & Base Styles ===== */
 * {
     margin: 0;
@@ -73,6 +117,7 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 /* ===== Typography ===== */
@@ -395,6 +440,7 @@ p {
     text-align: left;
     font-size: 0.9375rem;
     white-space: nowrap;
+    overflow: hidden;
 }
 
 .sidebar-item:hover {
@@ -421,6 +467,12 @@ p {
 .sidebar.collapsed .sidebar-item {
     justify-content: center;
     padding: var(--spacing-md);
+}
+
+.sidebar-item span {
+    transition: opacity var(--transition-fast);
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .sidebar-footer {
@@ -901,4 +953,103 @@ input:focus {
     .btn {
         display: none;
     }
+}
+
+/* ===== Password Toggle Styles ===== */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-input-wrapper input {
+    padding-right: 3rem;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast);
+    border-radius: var(--radius-sm);
+}
+
+.password-toggle-btn:hover {
+    color: var(--primary-color);
+    background: var(--surface-hover);
+}
+
+.password-toggle-btn:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.password-toggle-btn i {
+    width: 20px;
+    height: 20px;
+}
+
+/* ===== Dark Mode Toggle Styles ===== */
+.dark-mode-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-lg);
+    background: var(--background);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-md);
+}
+
+.dark-mode-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.dark-mode-info h4 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.dark-mode-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.dark-mode-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0.625rem 1.25rem;
+    background: var(--surface-hover);
+    border: 2px solid var(--primary-color);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.dark-mode-toggle-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.dark-mode-toggle-btn i {
+    width: 18px;
+    height: 18px;
 }
