@@ -80,7 +80,12 @@ const fileStore = new FileStore({
     logFn: (error) => {
         // Custom error logging for session store
         if (error) {
-            logger.error('Session file store error', { error: error.message });
+            logger.error('Session file store error', { 
+                error: error.message || String(error),
+                stack: error.stack,
+                code: error.code,
+                errno: error.errno
+            });
         }
     }
 });

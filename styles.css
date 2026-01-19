@@ -473,6 +473,11 @@ p {
     padding: var(--spacing-md);
 }
 
+.sidebar.collapsed .sidebar-toggle {
+    /* Ensure toggle button is visible and prominent when collapsed */
+    display: flex;
+}
+
 .sidebar-item span {
     transition: opacity var(--transition-fast);
     overflow: hidden;
@@ -482,6 +487,26 @@ p {
 .sidebar-footer {
     border-top: 1px solid #e2e8f0;
     padding: var(--spacing-md) 0;
+}
+
+.sidebar-account {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.sidebar-account:hover {
+    background: var(--surface-hover);
+    color: var(--primary-color);
+}
+
+.sidebar-account.active {
+    background: var(--surface-hover);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.sidebar-account i {
+    color: var(--primary-color);
 }
 
 .sidebar-logout {
@@ -1059,44 +1084,24 @@ input:focus {
 }
 
 /* ===== Sidebar User Info ===== */
-.sidebar-user-info {
-    padding: var(--spacing-md) var(--spacing-lg);
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    color: var(--text-secondary);
-    transition: all var(--transition-fast);
-}
-
-.sidebar-user-info i {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    color: var(--primary-color);
-}
-
-.sidebar-user-info .user-name {
-    font-size: 0.9375rem;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.sidebar.collapsed .sidebar-user-info {
-    justify-content: center;
-    padding: var(--spacing-md);
-}
-
-.sidebar.collapsed .sidebar-user-info .user-name {
-    display: none;
-}
-
 /* ===== Account Settings Grid ===== */
 .account-settings-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-xl);
+    gap: var(--spacing-md);
+}
+
+.account-settings-grid .dashboard-card {
+    padding: var(--spacing-lg);
+}
+
+.account-settings-grid .form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.account-settings-grid .form-group input {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
 }
 
 .account-settings-grid .full-width {
