@@ -96,10 +96,10 @@
                     <td>${date}</td>
                     <td class="table-actions">
                         ${request.status === 'pending' ? `
-                            <button class="btn-icon" onclick="registrationRequestsModule.approveRequest('${request.id}')" title="Genehmigen">
+                            <button class="btn-icon btn-approve" data-request-id="${escapeHtml(request.id)}" title="Genehmigen">
                                 <i data-lucide="check"></i>
                             </button>
-                            <button class="btn-icon btn-danger" onclick="registrationRequestsModule.openRejectModal('${request.id}')" title="Ablehnen">
+                            <button class="btn-icon btn-danger btn-reject" data-request-id="${escapeHtml(request.id)}" title="Ablehnen">
                                 <i data-lucide="x"></i>
                             </button>
                         ` : `
@@ -111,6 +111,21 @@
         }).join('');
         
         lucide.createIcons();
+        
+        // Add event listeners to action buttons
+        tbody.querySelectorAll('.btn-approve').forEach(button => {
+            button.addEventListener('click', function() {
+                const requestId = this.getAttribute('data-request-id');
+                approveRequest(requestId);
+            });
+        });
+        
+        tbody.querySelectorAll('.btn-reject').forEach(button => {
+            button.addEventListener('click', function() {
+                const requestId = this.getAttribute('data-request-id');
+                openRejectModal(requestId);
+            });
+        });
     }
     
     /**
@@ -273,10 +288,4 @@
         div.textContent = text;
         return div.innerHTML;
     }
-    
-    // Expose functions globally for onclick handlers
-    window.registrationRequestsModule = {
-        approveRequest,
-        openRejectModal
-    };
 })();
