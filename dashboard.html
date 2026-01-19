@@ -71,41 +71,42 @@
         </footer>
     </div>
     
-    <script src="lib/bcrypt.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/users.js"></script>
     <script>
         // Session-Check beim Laden
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!Auth.isAuthenticated()) {
-                window.location.href = 'index.html';
+        document.addEventListener('DOMContentLoaded', async function() {
+            const authStatus = await Auth.checkAuthStatus();
+            
+            if (!authStatus.authenticated) {
+                window.location.href = '/';
                 return;
             }
             
-            const session = Auth.getSession();
+            // Start session validation (checks every minute)
+            Auth.startSessionValidation();
+            
+            const user = authStatus.user;
             const usernameDisplay = document.getElementById('username-display');
             const userRole = document.getElementById('user-role');
             const loginTime = document.getElementById('login-time');
             
-            if (usernameDisplay) {
-                usernameDisplay.textContent = session.username;
+            if (usernameDisplay && user) {
+                usernameDisplay.textContent = user.username;
             }
             
-            if (userRole) {
-                userRole.textContent = `Rolle: ${session.role || 'Benutzer'}`;
+            if (userRole && user) {
+                userRole.textContent = `Rolle: ${user.role || 'Benutzer'}`;
             }
             
             if (loginTime) {
-                const loginDate = new Date(session.loginTime);
-                loginTime.textContent = loginDate.toLocaleString('de-DE');
+                loginTime.textContent = new Date().toLocaleString('de-DE');
             }
             
             // Logout-Funktionalität
             const logoutButton = document.getElementById('logout-button');
             if (logoutButton) {
-                logoutButton.addEventListener('click', function() {
-                    Auth.logout();
-                    window.location.href = 'index.html';
+                logoutButton.addEventListener('click', async function() {
+                    await Auth.logout();
                 });
             }
         });

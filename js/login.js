@@ -1,19 +1,26 @@
 /**
- * Login.js - Login Logic with reCAPTCHA
+ * Login.js - Login Logic with Server API
  * Handles the login form, validation, reCAPTCHA verification, and authentication
  */
 
 (function() {
     'use strict';
     
+    let recaptchaConfig = null;
+    let csrfToken = null;
+
     // Wait for DOM to be ready
-    document.addEventListener('DOMContentLoaded', function() {
-        // Redirect if already logged in
-        if (Auth.isAuthenticated()) {
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Check if already logged in
+        const authStatus = await Auth.checkAuthStatus();
+        if (authStatus.authenticated) {
             window.location.href = 'dashboard.html';
             return;
         }
-        
+
+        // Load reCAPTCHA config
+        await loadRecaptchaConfig();
+
         // Get form elements
         const loginForm = document.getElementById('login-form');
         const usernameInput = document.getElementById('username');
@@ -22,12 +29,40 @@
         const errorMessage = document.getElementById('error-message');
         const infoMessage = document.getElementById('info-message');
         
-        // Check if default admin was just created
-        checkForNewAdmin();
-        
         // Handle form submission
         loginForm.addEventListener('submit', handleLogin);
         
+        /**
+         * Loads reCAPTCHA configuration from server
+         */
+        async function loadRecaptchaConfig() {
+            try {
+                const response = await fetch('/api/recaptcha-config');
+                recaptchaConfig = await response.json();
+
+                if (recaptchaConfig.enabled && recaptchaConfig.siteKey) {
+                    // Load reCAPTCHA script
+                    const script = document.createElement('script');
+                    script.src = 'https://www.google.com/recaptcha/api.js';
+                    script.async = true;
+                    script.defer = true;
+                    document.head.appendChild(script);
+
+                    // Show reCAPTCHA container and set site key
+                    const recaptchaContainer = document.getElementById('recaptcha-container');
+                    if (recaptchaContainer) {
+                        recaptchaContainer.style.display = 'block';
+                        const recaptchaDiv = recaptchaContainer.querySelector('.g-recaptcha');
+                        if (recaptchaDiv) {
+                            recaptchaDiv.setAttribute('data-sitekey', recaptchaConfig.siteKey);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.warn('Failed to load reCAPTCHA config:', error);
+            }
+        }
+
         /**
          * Handles the login form submission
          * @param {Event} event - Form submit event
@@ -48,74 +83,74 @@
                 return;
             }
             
-            // Check rate limiting BEFORE reCAPTCHA
-            const lockout = RateLimit.checkLockout(username);
-            if (lockout.isLocked) {
-                const message = RateLimit.getLockoutMessage(username);
-                showError(message);
-                return;
-            }
-            
-            // Verify reCAPTCHA (if available)
-            let recaptchaResponse = null;
-            if (typeof grecaptcha !== 'undefined' && grecaptcha.getResponse) {
-                try {
-                    recaptchaResponse = grecaptcha.getResponse();
-                } catch (e) {
-                    console.warn('reCAPTCHA not available:', e);
+            // Get reCAPTCHA token if enabled
+            let recaptchaToken = null;
+            if (recaptchaConfig && recaptchaConfig.enabled) {
+                if (typeof grecaptcha !== 'undefined' && grecaptcha.getResponse) {
+                    try {
+                        recaptchaToken = grecaptcha.getResponse();
+                        if (!recaptchaToken) {
+                            showError('Bitte bestätigen Sie, dass Sie kein Roboter sind.');
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn('reCAPTCHA error:', e);
+                    }
                 }
-            }
-            
-            // Only require reCAPTCHA if it's loaded
-            if (typeof grecaptcha !== 'undefined' && !recaptchaResponse) {
-                showError('Bitte bestätigen Sie, dass Sie kein Roboter sind.');
-                return;
             }
             
             // Show loading state
             setLoading(true);
             
-            // Simulate network delay for better UX
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            // Verify credentials
-            const user = Users.verifyPassword(username, password);
-            
-            if (user) {
-                // Successful login
-                RateLimit.reset(username); // Reset failed attempts
-                Auth.createSession(user.username, user.role);
-                
-                // Show success message briefly before redirect
-                showInfo('Login erfolgreich! Weiterleitung zum Dashboard...');
-                
-                setTimeout(() => {
-                    window.location.href = 'dashboard.html';
-                }, 1000);
-            } else {
-                // Failed login
-                const rateLimitStatus = RateLimit.recordFailedAttempt(username);
-                
+            try {
+                // Send login request to server
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username,
+                        password,
+                        recaptchaToken
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Successful login
+                    showInfo('Login erfolgreich! Weiterleitung zum Dashboard...');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                } else {
+                    // Failed login
+                    setLoading(false);
+                    
+                    // Reset reCAPTCHA if available
+                    if (recaptchaConfig && recaptchaConfig.enabled && typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
+                        try {
+                            grecaptcha.reset();
+                        } catch (e) {
+                            console.warn('Could not reset reCAPTCHA:', e);
+                        }
+                    }
+                    
+                    showError(data.error || 'Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.');
+                }
+            } catch (error) {
                 setLoading(false);
+                console.error('Login error:', error);
+                showError('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
                 
                 // Reset reCAPTCHA if available
-                if (typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
+                if (recaptchaConfig && recaptchaConfig.enabled && typeof grecaptcha !== 'undefined' && grecaptcha.reset) {
                     try {
                         grecaptcha.reset();
                     } catch (e) {
                         console.warn('Could not reset reCAPTCHA:', e);
-                    }
-                }
-                
-                if (rateLimitStatus.isLocked) {
-                    const message = RateLimit.getLockoutMessage(username);
-                    showError(message);
-                } else {
-                    const attemptsLeft = 5 - rateLimitStatus.attempts;
-                    if (attemptsLeft > 0 && rateLimitStatus.attempts > 0) {
-                        showError(`Ungültige Anmeldedaten. Noch ${attemptsLeft} Versuch${attemptsLeft !== 1 ? 'e' : ''} übrig.`);
-                    } else {
-                        showError('Ungültige Anmeldedaten. Bitte versuchen Sie es erneut.');
                     }
                 }
             }
@@ -169,16 +204,6 @@
                 spinner.classList.add('hidden');
                 usernameInput.disabled = false;
                 passwordInput.disabled = false;
-            }
-        }
-        
-        /**
-         * Checks if a new admin user was created and shows info
-         */
-        function checkForNewAdmin() {
-            const users = Users.getAllUsers();
-            if (users.length === 1 && users[0].username === 'admin') {
-                showInfo('Standard-Admin erstellt. Benutzername: admin, Passwort: Admin123! - Bitte ändern Sie das Passwort nach der ersten Anmeldung!');
             }
         }
         
