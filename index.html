@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hive Panel - Login</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <div class="container">
         <div class="login-card">
             <div class="logo">
-                <h1>🐝 Hive Panel</h1>
+                <h1><i data-lucide="hexagon" class="logo-icon"></i> Hive Panel</h1>
             </div>
             
             <h2>Anmelden</h2>
@@ -57,5 +58,9 @@
     
     <script src="js/auth.js"></script>
     <script src="js/login.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>

@@ -88,13 +88,13 @@ async function ensureDefaultAdmin() {
             const success = await writeJsonFile(USERS_FILE, users);
             
             if (success) {
-                logger.info('✅ Default admin user created successfully');
+                logger.info('[OK] Default admin user created successfully');
                 console.log('\n' + '='.repeat(70));
-                console.log('✅ Standard-Admin-Benutzer erstellt:');
+                console.log('[OK] Standard-Admin-Benutzer erstellt:');
                 console.log('   Benutzername: admin');
                 console.log('   Passwort: ' + password);
                 console.log('');
-                console.log('   ⚠️  WICHTIG: Ändern Sie das Passwort nach der ersten Anmeldung!');
+                console.log('   [!] WICHTIG: Ändern Sie das Passwort nach der ersten Anmeldung!');
                 console.log('='.repeat(70) + '\n');
                 
                 return {

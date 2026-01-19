@@ -26,6 +26,7 @@ const { sessionValidation } = require('./middleware/sessionValidation');
 
 // Import routes
 const authRoutes = require('./routes/auth');
+const accountRoutes = require('./routes/account');
 const { ensureDefaultAdmin } = require('./routes/users');
 
 // Validate environment variables
@@ -51,20 +52,41 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Cookie parser middleware
 app.use(cookieParser());
 
-// Ensure sessions directory exists
+// Ensure sessions directory exists with proper error handling
 const sessionsDir = path.join(__dirname, 'sessions');
-if (!fs.existsSync(sessionsDir)) {
-    fs.mkdirSync(sessionsDir, { recursive: true });
+try {
+    if (!fs.existsSync(sessionsDir)) {
+        fs.mkdirSync(sessionsDir, { recursive: true, mode: 0o755 });
+        logger.info('Sessions directory created', { path: sessionsDir });
+    }
+    // Verify write permissions
+    fs.accessSync(sessionsDir, fs.constants.W_OK | fs.constants.R_OK);
+} catch (error) {
+    logger.error('Failed to create or access sessions directory', { 
+        error: error.message,
+        path: sessionsDir 
+    });
+    console.error('Error: Cannot create or access sessions directory. Please check permissions.');
+    process.exit(1);
 }
 
-// Session middleware
+// Session middleware with error handling
+const fileStore = new FileStore({
+    path: sessionsDir,
+    ttl: config.session.cookie.maxAge / 1000, // Convert to seconds
+    retries: 5,
+    retryDelay: 200,
+    reapInterval: 60 * 60, // Clean up every hour
+    logFn: (error) => {
+        // Custom error logging for session store
+        if (error) {
+            logger.error('Session file store error', { error: error.message });
+        }
+    }
+});
+
 app.use(session({
-    store: new FileStore({
-        path: sessionsDir,
-        ttl: config.session.cookie.maxAge / 1000, // Convert to seconds
-        retries: 3,
-        reapInterval: 60 * 60 // Clean up every hour
-    }),
+    store: fileStore,
     secret: config.session.secret,
     name: config.session.name,
     resave: config.session.resave,
@@ -104,6 +126,7 @@ if (process.env.NODE_ENV === 'production') {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/account', accountRoutes);
 
 // CSRF token endpoint
 app.get('/api/csrf-token', csrfProtection, (req, res) => {
@@ -137,6 +160,15 @@ app.get('/dashboard.html', (req, res) => {
         return res.redirect('/');
     }
     res.sendFile(path.join(__dirname, 'dashboard.html'));
+});
+
+// Protected route for account settings
+app.get('/account.html', (req, res) => {
+    // Check if user is authenticated
+    if (!req.session || !req.session.userId) {
+        return res.redirect('/');
+    }
+    res.sendFile(path.join(__dirname, 'html/account.html'));
 });
 
 // 404 handler
@@ -178,7 +210,7 @@ async function startServer() {
         // Start listening
         server = app.listen(PORT, () => {
             const envInfo = getEnvInfo();
-            logger.info('🐝 Hive Panel Server started');
+            logger.info('[Hive] Panel Server started');
             logger.info(`Environment: ${envInfo.nodeEnv}`);
             logger.info(`Port: ${PORT}`);
             logger.info(`Server URL: http://localhost:${PORT}`);
@@ -186,10 +218,10 @@ async function startServer() {
             logger.info(`Node.js: ${envInfo.nodeVersion}`);
             
             console.log('\n' + '='.repeat(70));
-            console.log('🐝 Hive Panel Server läuft');
+            console.log('[Hive] Panel Server läuft');
             console.log(`   URL: http://localhost:${PORT}`);
             console.log(`   Umgebung: ${envInfo.nodeEnv}`);
-            console.log(`   reCAPTCHA: ${envInfo.recaptchaEnabled ? '✅ Aktiviert' : '⚠️  Deaktiviert'}`);
+            console.log(`   reCAPTCHA: ${envInfo.recaptchaEnabled ? '[OK] Aktiviert' : '[!] Deaktiviert'}`);
             console.log('='.repeat(70) + '\n');
         });
     } catch (error) {

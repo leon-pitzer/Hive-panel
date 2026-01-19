@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive Panel - Account-Einstellungen</title>
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i data-lucide="hexagon"></i>
+                    <span class="sidebar-title">Hive Panel</span>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+                    <i data-lucide="panel-left-close"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="sidebar-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/account.html" class="sidebar-item active">
+                    <i data-lucide="user-cog"></i>
+                    <span>Account-Einstellungen</span>
+                </a>
+                <a href="#" class="sidebar-item admin-only" style="display: none;">
+                    <i data-lucide="users"></i>
+                    <span>Benutzerverwaltung</span>
+                </a>
+                <a href="#" class="sidebar-item admin-only" style="display: none;">
+                    <i data-lucide="settings"></i>
+                    <span>Systemeinstellungen</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="sidebar-logout-button" class="sidebar-item sidebar-logout">
+                    <i data-lucide="log-out"></i>
+                    <span>Abmelden</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+        
+        <!-- Main Content -->
+        <div class="main-wrapper">
+            <header class="dashboard-header">
+                <div class="header-content">
+                    <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle Menu">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="header-right">
+                        <span class="welcome-message"><strong id="username-display"></strong></span>
+                    </div>
+                </div>
+            </header>
+        
+            <main class="dashboard-main">
+                <div class="dashboard-content">
+                    <div class="dashboard-card">
+                        <h2><i data-lucide="user-cog" style="width: 24px; height: 24px; display: inline-block; vertical-align: middle;"></i> Account-Einstellungen</h2>
+                        <p>Verwalten Sie Ihre Account-Informationen und Sicherheitseinstellungen.</p>
+                    </div>
+                    
+                    <!-- Username Change -->
+                    <div class="dashboard-card">
+                        <h3><i data-lucide="user" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Benutzername ändern</h3>
+                        <form id="username-form" class="account-form">
+                            <div class="form-group">
+                                <label for="new-username">Neuer Benutzername</label>
+                                <input type="text" id="new-username" name="newUsername" required 
+                                       placeholder="Neuer Benutzername"
+                                       pattern="[a-zA-Z0-9_-]+"
+                                       minlength="3"
+                                       maxlength="30">
+                                <small class="form-help">3-30 Zeichen, nur Buchstaben, Zahlen, _ und -</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-lucide="save"></i>
+                                <span>Benutzername ändern</span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Password Change -->
+                    <div class="dashboard-card">
+                        <h3><i data-lucide="lock" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Passwort ändern</h3>
+                        <form id="password-form" class="account-form">
+                            <div class="form-group">
+                                <label for="current-password">Aktuelles Passwort</label>
+                                <input type="password" id="current-password" name="currentPassword" required 
+                                       placeholder="Aktuelles Passwort eingeben"
+                                       autocomplete="current-password">
+                            </div>
+                            <div class="form-group">
+                                <label for="new-password">Neues Passwort</label>
+                                <input type="password" id="new-password" name="newPassword" required 
+                                       placeholder="Neues Passwort eingeben"
+                                       minlength="8"
+                                       autocomplete="new-password">
+                                <div id="password-strength" class="password-strength"></div>
+                                <small class="form-help">Mindestens 8 Zeichen</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-password">Passwort bestätigen</label>
+                                <input type="password" id="confirm-password" name="confirmPassword" required 
+                                       placeholder="Neues Passwort bestätigen"
+                                       minlength="8"
+                                       autocomplete="new-password">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" id="generate-password-btn" class="btn btn-secondary">
+                                    <i data-lucide="refresh-cw"></i>
+                                    <span>Sicheres Passwort generieren</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i data-lucide="save"></i>
+                                    <span>Passwort ändern</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="dashboard-card">
+                        <h3><i data-lucide="mail" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> E-Mail-Adresse</h3>
+                        <form id="email-form" class="account-form">
+                            <div class="form-group">
+                                <label for="email">E-Mail-Adresse</label>
+                                <input type="email" id="email" name="email" required 
+                                       placeholder="ihre@email.de">
+                                <small class="form-help">Ihre E-Mail wird verschlüsselt gespeichert</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-lucide="save"></i>
+                                <span>E-Mail speichern</span>
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Display Name -->
+                    <div class="dashboard-card">
+                        <h3><i data-lucide="id-card" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Anzeigename</h3>
+                        <form id="displayname-form" class="account-form">
+                            <div class="form-group">
+                                <label for="display-name">Anzeigename</label>
+                                <input type="text" id="display-name" name="displayName" required 
+                                       placeholder="Ihr Name"
+                                       maxlength="50">
+                                <small class="form-help">Maximal 50 Zeichen</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-lucide="save"></i>
+                                <span>Anzeigename speichern</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </main>
+            
+            <footer class="dashboard-footer">
+                <p>&copy; 2024 Hive Panel. Alle Rechte vorbehalten.</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+    
+    <script src="../js/auth.js"></script>
+    <script src="../js/sidebar.js"></script>
+    <script src="../js/account.js"></script>
+    <script>
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const authStatus = await Auth.checkAuthStatus();
+            
+            if (!authStatus.authenticated) {
+                window.location.href = '/';
+                return;
+            }
+            
+            Auth.startSessionValidation();
+            
+            const user = authStatus.user;
+            const usernameDisplay = document.getElementById('username-display');
+            
+            if (usernameDisplay && user) {
+                usernameDisplay.textContent = user.username;
+            }
+            
+            // Show admin-only items for admins
+            if (user && user.role === 'admin') {
+                document.querySelectorAll('.admin-only').forEach(el => {
+                    el.style.display = '';
+                });
+            }
+            
+            // Logout functionality
+            const sidebarLogoutButton = document.getElementById('sidebar-logout-button');
+            if (sidebarLogoutButton) {
+                sidebarLogoutButton.addEventListener('click', async function() {
+                    await Auth.logout();
+                });
+            }
+            
+            // Initialize Lucide icons
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
