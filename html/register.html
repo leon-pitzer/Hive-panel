@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive Panel - Registrierung</title>
+    
+    <!-- CRITICAL: Dark Mode BEFORE CSS loading -->
+    <script>
+        (function() {
+            const darkMode = localStorage.getItem('hive-panel-dark-mode') === 'true';
+            if (darkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    
+    <link rel="stylesheet" href="../styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <h1>Hive Panel</h1>
+            </div>
+            
+            <h2>Registrierung</h2>
+            
+            <div id="error-message" class="error-message hidden"></div>
+            <div id="info-message" class="info-message hidden"></div>
+            
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="username">Benutzername *</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        required 
+                        pattern="[a-zA-Z0-9_-]+"
+                        minlength="3"
+                        maxlength="30"
+                        autocomplete="username"
+                        placeholder="Benutzername eingeben"
+                    >
+                    <small class="form-help">3-30 Zeichen, nur Buchstaben, Zahlen, _ und -</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">E-Mail *</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        required 
+                        autocomplete="email"
+                        placeholder="beispiel@email.de"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Passwort *</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        minlength="8"
+                        autocomplete="new-password"
+                        placeholder="Mindestens 8 Zeichen"
+                    >
+                    <div id="password-strength" class="password-strength hidden"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-password">Passwort bestätigen *</label>
+                    <input 
+                        type="password" 
+                        id="confirm-password" 
+                        name="confirm-password" 
+                        required 
+                        minlength="8"
+                        autocomplete="new-password"
+                        placeholder="Passwort wiederholen"
+                    >
+                </div>
+                
+                <button type="submit" id="register-button" class="btn btn-primary">
+                    <span class="button-text">Registrieren</span>
+                    <span class="spinner hidden"></span>
+                </button>
+            </form>
+            
+            <div class="login-info">
+                <a href="/" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                    <span>Zurück zum Login</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/auth.js"></script>
+    <script src="../js/darkmode.js"></script>
+    <script src="../js/register.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

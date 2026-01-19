@@ -81,6 +81,10 @@
                         <div class="tabs">
                             <button class="tab-button active" data-tab="accounts">Konten</button>
                             <button class="tab-button" data-tab="roles">Rollen</button>
+                            <button class="tab-button" data-tab="registration-requests">
+                                Registrierungsanfragen
+                                <span id="registration-requests-badge" class="badge badge-warning" style="margin-left: 0.5rem; display: none;">0</span>
+                            </button>
                         </div>
                         
                         <!-- Accounts Tab -->
@@ -140,6 +144,35 @@
                                             <td colspan="3" style="text-align: center; padding: var(--spacing-xl);">
                                                 <div class="spinner"></div>
                                                 <p style="margin-top: var(--spacing-md); color: var(--text-secondary);">Lade Rollen...</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Registration Requests Tab -->
+                        <div id="registration-requests-tab" class="tab-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                                <h3>Registrierungsanfragen</h3>
+                            </div>
+                            
+                            <div class="table-container">
+                                <table class="data-table" id="registration-requests-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Benutzername</th>
+                                            <th>E-Mail</th>
+                                            <th>Status</th>
+                                            <th>Erstellt am</th>
+                                            <th>Aktionen</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="registration-requests-tbody">
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; padding: var(--spacing-xl);">
+                                                <div class="spinner"></div>
+                                                <p style="margin-top: var(--spacing-md); color: var(--text-secondary);">Lade Registrierungsanfragen...</p>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -317,6 +350,34 @@
         </div>
     </div>
     
+    <!-- Reject Modal -->
+    <div id="reject-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Registrierungsanfrage ablehnen</h3>
+                <button class="modal-close" data-modal="reject-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="reject-reason">Grund für die Ablehnung (optional)</label>
+                    <textarea 
+                        id="reject-reason" 
+                        rows="4" 
+                        placeholder="Geben Sie einen optionalen Grund für die Ablehnung ein..."
+                        style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: var(--radius-md); font-family: var(--font-family); font-size: 1rem; background: var(--surface); color: var(--text-primary); resize: vertical;"
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-modal="reject-modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="reject-confirm-btn" style="background: var(--error);">Ablehnen</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Toast Notification -->
     <div id="toast" class="toast"></div>
     
@@ -325,6 +386,7 @@
     <script src="../../js/darkmode.js"></script>
     <script src="../../js/sidebar.js"></script>
     <script src="../../js/admin/accounts.js"></script>
+    <script src="../../js/admin/registration-requests.js"></script>
     <script>
         // Initialize on load
         document.addEventListener('DOMContentLoaded', async function() {
