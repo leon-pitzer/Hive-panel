@@ -30,17 +30,13 @@
                     <i data-lucide="user-cog"></i>
                     <span>Account-Einstellungen</span>
                 </a>
-                <a href="#" class="sidebar-item admin-only" style="display: none;">
-                    <i data-lucide="users"></i>
-                    <span>Benutzerverwaltung</span>
-                </a>
-                <a href="#" class="sidebar-item admin-only" style="display: none;">
-                    <i data-lucide="settings"></i>
-                    <span>Systemeinstellungen</span>
-                </a>
             </nav>
             
             <div class="sidebar-footer">
+                <div class="sidebar-user-info">
+                    <i data-lucide="user"></i>
+                    <span class="user-name" id="sidebar-username-display"></span>
+                </div>
                 <button id="sidebar-logout-button" class="sidebar-item sidebar-logout">
                     <i data-lucide="log-out"></i>
                     <span>Abmelden</span>
@@ -59,7 +55,6 @@
                         <i data-lucide="menu"></i>
                     </button>
                     <div class="header-right">
-                        <span class="welcome-message">Willkommen, <strong id="username-display"></strong>!</span>
                     </div>
                 </div>
             </header>
@@ -139,12 +134,12 @@
             Auth.startSessionValidation();
             
             const user = authStatus.user;
-            const usernameDisplay = document.getElementById('username-display');
+            const sidebarUsernameDisplay = document.getElementById('sidebar-username-display');
             const userRole = document.getElementById('user-role');
             const loginTime = document.getElementById('login-time');
             
-            if (usernameDisplay && user) {
-                usernameDisplay.textContent = user.username;
+            if (sidebarUsernameDisplay && user) {
+                sidebarUsernameDisplay.textContent = user.username;
             }
             
             if (userRole && user) {
@@ -153,13 +148,6 @@
             
             if (loginTime) {
                 loginTime.textContent = new Date().toLocaleString('de-DE');
-            }
-            
-            // Show admin-only items for admins
-            if (user && user.role === 'admin') {
-                document.querySelectorAll('.admin-only').forEach(el => {
-                    el.style.display = '';
-                });
             }
             
             // Logout-Funktionalität (sidebar button)

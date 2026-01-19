@@ -30,17 +30,13 @@
                     <i data-lucide="user-cog"></i>
                     <span>Account-Einstellungen</span>
                 </a>
-                <a href="#" class="sidebar-item admin-only" style="display: none;">
-                    <i data-lucide="users"></i>
-                    <span>Benutzerverwaltung</span>
-                </a>
-                <a href="#" class="sidebar-item admin-only" style="display: none;">
-                    <i data-lucide="settings"></i>
-                    <span>Systemeinstellungen</span>
-                </a>
             </nav>
             
             <div class="sidebar-footer">
+                <div class="sidebar-user-info">
+                    <i data-lucide="user"></i>
+                    <span class="user-name" id="sidebar-username-display"></span>
+                </div>
                 <button id="sidebar-logout-button" class="sidebar-item sidebar-logout">
                     <i data-lucide="log-out"></i>
                     <span>Abmelden</span>
@@ -59,7 +55,6 @@
                         <i data-lucide="menu"></i>
                     </button>
                     <div class="header-right">
-                        <span class="welcome-message"><strong id="username-display"></strong></span>
                     </div>
                 </div>
             </header>
@@ -71,113 +66,115 @@
                         <p>Verwalten Sie Ihre Account-Informationen und Sicherheitseinstellungen.</p>
                     </div>
                     
-                    <!-- Username Change -->
-                    <div class="dashboard-card">
-                        <h3><i data-lucide="user" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Benutzername ändern</h3>
-                        <form id="username-form" class="account-form">
-                            <div class="form-group">
-                                <label for="new-username">Neuer Benutzername</label>
-                                <input type="text" id="new-username" name="newUsername" required 
-                                       placeholder="Neuer Benutzername"
-                                       pattern="[a-zA-Z0-9_-]+"
-                                       minlength="3"
-                                       maxlength="30">
-                                <small class="form-help">3-30 Zeichen, nur Buchstaben, Zahlen, _ und -</small>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i data-lucide="save"></i>
-                                <span>Benutzername ändern</span>
-                            </button>
-                        </form>
-                    </div>
-                    
-                    <!-- Password Change -->
-                    <div class="dashboard-card">
-                        <h3><i data-lucide="lock" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Passwort ändern</h3>
-                        <form id="password-form" class="account-form">
-                            <div class="form-group">
-                                <label for="current-password">Aktuelles Passwort</label>
-                                <input type="password" id="current-password" name="currentPassword" required 
-                                       placeholder="Aktuelles Passwort eingeben"
-                                       autocomplete="current-password">
-                            </div>
-                            <div class="form-group">
-                                <label for="new-password">Neues Passwort</label>
-                                <input type="password" id="new-password" name="newPassword" required 
-                                       placeholder="Neues Passwort eingeben"
-                                       minlength="8"
-                                       autocomplete="new-password">
-                                <div id="password-strength" class="password-strength"></div>
-                                <small class="form-help">Mindestens 8 Zeichen</small>
-                            </div>
-                            <div class="form-group">
-                                <label for="confirm-password">Passwort bestätigen</label>
-                                <input type="password" id="confirm-password" name="confirmPassword" required 
-                                       placeholder="Neues Passwort bestätigen"
-                                       minlength="8"
-                                       autocomplete="new-password">
-                            </div>
-                            <div class="form-actions">
-                                <button type="button" id="generate-password-btn" class="btn btn-secondary">
-                                    <i data-lucide="refresh-cw"></i>
-                                    <span>Sicheres Passwort generieren</span>
-                                </button>
+                    <div class="account-settings-grid">
+                        <!-- Username Change -->
+                        <div class="dashboard-card">
+                            <h3><i data-lucide="user" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Benutzername ändern</h3>
+                            <form id="username-form" class="account-form">
+                                <div class="form-group">
+                                    <label for="new-username">Neuer Benutzername</label>
+                                    <input type="text" id="new-username" name="newUsername" required 
+                                           placeholder="Neuer Benutzername"
+                                           pattern="[a-zA-Z0-9_-]+"
+                                           minlength="3"
+                                           maxlength="30">
+                                    <small class="form-help">3-30 Zeichen, nur Buchstaben, Zahlen, _ und -</small>
+                                </div>
                                 <button type="submit" class="btn btn-primary">
                                     <i data-lucide="save"></i>
-                                    <span>Passwort ändern</span>
+                                    <span>Benutzername ändern</span>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Email -->
+                        <div class="dashboard-card">
+                            <h3><i data-lucide="mail" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> E-Mail-Adresse</h3>
+                            <form id="email-form" class="account-form">
+                                <div class="form-group">
+                                    <label for="email">E-Mail-Adresse</label>
+                                    <input type="email" id="email" name="email" required 
+                                           placeholder="ihre@email.de">
+                                    <small class="form-help">Ihre E-Mail wird verschlüsselt gespeichert</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i data-lucide="save"></i>
+                                    <span>E-Mail speichern</span>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Password Change -->
+                        <div class="dashboard-card full-width">
+                            <h3><i data-lucide="lock" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Passwort ändern</h3>
+                            <form id="password-form" class="account-form">
+                                <div class="form-group">
+                                    <label for="current-password">Aktuelles Passwort</label>
+                                    <input type="password" id="current-password" name="currentPassword" required 
+                                           placeholder="Aktuelles Passwort eingeben"
+                                           autocomplete="current-password">
+                                </div>
+                                <div class="form-group">
+                                    <label for="new-password">Neues Passwort</label>
+                                    <input type="password" id="new-password" name="newPassword" required 
+                                           placeholder="Neues Passwort eingeben"
+                                           minlength="8"
+                                           autocomplete="new-password">
+                                    <div id="password-strength" class="password-strength"></div>
+                                    <small class="form-help">Mindestens 8 Zeichen</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirm-password">Passwort bestätigen</label>
+                                    <input type="password" id="confirm-password" name="confirmPassword" required 
+                                           placeholder="Neues Passwort bestätigen"
+                                           minlength="8"
+                                           autocomplete="new-password">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" id="generate-password-btn" class="btn btn-secondary">
+                                        <i data-lucide="refresh-cw"></i>
+                                        <span>Sicheres Passwort generieren</span>
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="save"></i>
+                                        <span>Passwort ändern</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Display Name -->
+                        <div class="dashboard-card">
+                            <h3><i data-lucide="id-card" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Anzeigename</h3>
+                            <form id="displayname-form" class="account-form">
+                                <div class="form-group">
+                                    <label for="display-name">Anzeigename</label>
+                                    <input type="text" id="display-name" name="displayName" required 
+                                           placeholder="Ihr Name"
+                                           maxlength="50">
+                                    <small class="form-help">Maximal 50 Zeichen</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i data-lucide="save"></i>
+                                    <span>Anzeigename speichern</span>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Appearance Settings -->
+                        <div class="dashboard-card">
+                            <h3><i data-lucide="palette" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Darstellung</h3>
+                            <div class="dark-mode-toggle-wrapper">
+                                <div class="dark-mode-info">
+                                    <h4>Dark Mode</h4>
+                                    <p>Wechseln Sie zwischen hellem und dunklem Design</p>
+                                </div>
+                                <button type="button" id="dark-mode-toggle" class="dark-mode-toggle-btn">
+                                    <i data-lucide="moon"></i>
+                                    <span class="toggle-text">Dark Mode</span>
                                 </button>
                             </div>
-                        </form>
-                    </div>
-                    
-                    <!-- Appearance Settings -->
-                    <div class="dashboard-card">
-                        <h3><i data-lucide="palette" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Darstellung</h3>
-                        <div class="dark-mode-toggle-wrapper">
-                            <div class="dark-mode-info">
-                                <h4>Dark Mode</h4>
-                                <p>Wechseln Sie zwischen hellem und dunklem Design</p>
-                            </div>
-                            <button type="button" id="dark-mode-toggle" class="dark-mode-toggle-btn">
-                                <i data-lucide="moon"></i>
-                                <span class="toggle-text">Dark Mode</span>
-                            </button>
                         </div>
-                    </div>
-                    
-                    <!-- Email -->
-                    <div class="dashboard-card">
-                        <h3><i data-lucide="mail" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> E-Mail-Adresse</h3>
-                        <form id="email-form" class="account-form">
-                            <div class="form-group">
-                                <label for="email">E-Mail-Adresse</label>
-                                <input type="email" id="email" name="email" required 
-                                       placeholder="ihre@email.de">
-                                <small class="form-help">Ihre E-Mail wird verschlüsselt gespeichert</small>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i data-lucide="save"></i>
-                                <span>E-Mail speichern</span>
-                            </button>
-                        </form>
-                    </div>
-                    
-                    <!-- Display Name -->
-                    <div class="dashboard-card">
-                        <h3><i data-lucide="id-card" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Anzeigename</h3>
-                        <form id="displayname-form" class="account-form">
-                            <div class="form-group">
-                                <label for="display-name">Anzeigename</label>
-                                <input type="text" id="display-name" name="displayName" required 
-                                       placeholder="Ihr Name"
-                                       maxlength="50">
-                                <small class="form-help">Maximal 50 Zeichen</small>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i data-lucide="save"></i>
-                                <span>Anzeigename speichern</span>
-                            </button>
-                        </form>
                     </div>
                 </div>
             </main>
@@ -209,17 +206,10 @@
             Auth.startSessionValidation();
             
             const user = authStatus.user;
-            const usernameDisplay = document.getElementById('username-display');
+            const sidebarUsernameDisplay = document.getElementById('sidebar-username-display');
             
-            if (usernameDisplay && user) {
-                usernameDisplay.textContent = user.username;
-            }
-            
-            // Show admin-only items for admins
-            if (user && user.role === 'admin') {
-                document.querySelectorAll('.admin-only').forEach(el => {
-                    el.style.display = '';
-                });
+            if (sidebarUsernameDisplay && user) {
+                sidebarUsernameDisplay.textContent = user.username;
             }
             
             // Logout functionality
