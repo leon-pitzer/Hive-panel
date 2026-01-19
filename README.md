@@ -1,19 +1,18 @@
-# 🐝 Hive Panel - Sichere Login-Website
+# 🐝 Hive Panel - Sichere Login-Website mit Express.js
 
-Eine vollständige, sichere Login-Website mit Google reCAPTCHA v2, bcrypt-Passwort-Verschlüsselung und intelligentem Rate-Limiting-System.
+Eine vollständige, sichere Login-Website mit Express.js Backend, Google reCAPTCHA v2, bcrypt-Passwort-Verschlüsselung und intelligentem Rate-Limiting-System.
 
 ## 📋 Features
 
 ### Sicherheit
+- ✅ **Express.js Backend**: Server-seitige Authentifizierung und Session-Management
 - ✅ **Bcrypt-Passwort-Verschlüsselung**: Alle Passwörter werden mit bcrypt gehasht (niemals Klartext)
-- ✅ **Google reCAPTCHA v2**: Schutz vor automatisierten Angriffen
-- ✅ **Intelligentes Rate Limiting**: Progressive Sperrzeiten bei Fehlversuchen
-  - 5 Fehlversuche → 1 Minute Sperre
-  - 10 Fehlversuche → 5 Minuten Sperre
-  - 20 Fehlversuche → 1 Stunde Sperre
-  - 20+ Fehlversuche → 24 Stunden Sperre
-- ✅ **Session-Management**: Sichere Browser-Sessions mit Ablaufzeit
-- ✅ **XSS-Schutz**: Eingabevalidierung und sichere Datenverarbeitung
+- ✅ **Server-seitige reCAPTCHA v2**: Schutz vor automatisierten Angriffen
+- ✅ **Intelligentes Rate Limiting**: 5 Login-Versuche pro 15 Minuten
+- ✅ **Session-Management mit Timeout**: Automatisches Logout nach 10 Minuten Inaktivität
+- ✅ **CSRF-Schutz**: Token-basierte CSRF-Protection
+- ✅ **Helmet Security Headers**: XSS, Clickjacking und andere Angriffe werden verhindert
+- ✅ **Sichere Session-Store**: File-basierte Sessions mit automatischem Cleanup
 
 ### Design
 - 📱 **Responsive Design**: Optimiert für Desktop, Tablet und Mobile
@@ -22,214 +21,246 @@ Eine vollständige, sichere Login-Website mit Google reCAPTCHA v2, bcrypt-Passwo
 - 🌈 **Moderne Farbpalette**: Attraktives Blau/Lila-Farbschema
 
 ### Funktionalität
-- 👤 **Automatische Admin-Erstellung**: Beim ersten Start wird automatisch ein Admin-Benutzer erstellt
+- 👤 **Automatische Admin-Erstellung**: Beim ersten Start wird automatisch ein Admin-Benutzer mit sicherem Passwort erstellt
 - 🔐 **Sichere Authentifizierung**: Login mit Benutzername und Passwort
 - 📊 **Dashboard**: Übersichtliches Dashboard nach erfolgreicher Anmeldung
 - 🚪 **Logout-Funktion**: Sichere Abmeldung mit Session-Bereinigung
+- ⏱️ **Session-Überwachung**: Automatische Überprüfung der Session-Gültigkeit
 
 ## 🚀 Installation & Setup
 
-### 1. Dateien herunterladen
-Klonen oder laden Sie dieses Repository herunter:
-
+### 1. Repository klonen
 ```bash
 git clone <repository-url>
 cd Hive-panel
 ```
 
-### 1.5 bcrypt.js einrichten (optional)
-Die bcrypt.js Bibliothek ist bereits im `lib/` Ordner enthalten. Falls Sie diese neu generieren möchten:
-
+### 2. Dependencies installieren
 ```bash
-npm run setup
+npm install
 ```
 
-Dies installiert bcryptjs und kopiert die Browser-kompatible Version in den `lib/` Ordner.
+### 3. Umgebungsvariablen konfigurieren
+Erstellen Sie eine `.env` Datei im Root-Verzeichnis (verwenden Sie `.env.example` als Vorlage):
 
-### 2. Google reCAPTCHA konfigurieren
+```bash
+cp .env.example .env
+```
 
-#### reCAPTCHA-Schlüssel erhalten:
+Bearbeiten Sie die `.env` Datei:
+
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Session Configuration
+# Generieren Sie einen sicheren Session-Secret mit:
+# node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+SESSION_SECRET=your_128_character_hex_session_secret_here
+
+# reCAPTCHA Configuration (optional - leer lassen um reCAPTCHA zu deaktivieren)
+RECAPTCHA_SITE_KEY=your_recaptcha_site_key_here
+RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key_here
+```
+
+#### Session Secret generieren:
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+#### reCAPTCHA konfigurieren (optional):
 1. Besuchen Sie [Google reCAPTCHA Admin Console](https://www.google.com/recaptcha/admin)
 2. Registrieren Sie eine neue Website
 3. Wählen Sie **reCAPTCHA v2** → "Ich bin kein Roboter"-Kontrollkästchen
 4. Fügen Sie Ihre Domain hinzu (für lokale Tests: `localhost`)
-5. Kopieren Sie den **Site Key** und **Secret Key**
+5. Kopieren Sie den **Site Key** und **Secret Key** in die `.env` Datei
 
-#### Schlüssel einfügen:
-Öffnen Sie `index.html` und ersetzen Sie den Test-Schlüssel:
+**Hinweis:** Wenn keine reCAPTCHA-Keys konfiguriert sind, wird der Bot-Schutz deaktiviert, aber die Website funktioniert weiterhin.
 
-```html
-<!-- Zeile 49 in index.html -->
-<div class="g-recaptcha" data-sitekey="HIER_IHREN_SITE_KEY_EINFÜGEN"></div>
-```
-
-**Hinweis**: Der aktuelle Test-Schlüssel (`6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI`) funktioniert nur für Tests und akzeptiert jede Eingabe. Die Anwendung funktioniert auch ohne reCAPTCHA (falls CDN blockiert ist), jedoch wird dann kein Bot-Schutz angewendet.
-
-### 3. Website starten
-
-#### Option A: Mit lokalem Webserver (empfohlen)
+### 4. Server starten
 ```bash
-# Mit Python 3
-python -m http.server 8000
-
-# Mit Python 2
-python -m SimpleHTTPServer 8000
-
-# Mit Node.js (npx http-server)
-npx http-server -p 8000
-
-# Mit PHP
-php -S localhost:8000
+npm start
 ```
 
-Dann öffnen Sie: `http://localhost:8000`
+Oder für Entwicklung mit automatischem Neustart:
+```bash
+npm run dev
+```
 
-#### Option B: Direkt im Browser
-Öffnen Sie `index.html` direkt in Ihrem Browser. 
+Die Website ist nun unter `http://localhost:3000` erreichbar.
 
-**Achtung**: Einige Features funktionieren möglicherweise nicht optimal ohne Webserver (z.B. localStorage-Einschränkungen).
+## 👥 Standard-Admin-Benutzer
 
-## 👥 Benutzerverwaltung
-
-### Standard-Admin-Benutzer
-
-Beim ersten Start wird automatisch ein Admin-Benutzer erstellt:
-
+Beim **ersten Start** wird automatisch ein Admin-Benutzer erstellt:
 - **Benutzername**: `admin`
-- **Passwort**: `Admin123!`
+- **Passwort**: Ein sicheres, zufällig generiertes Passwort (mindestens 16 Zeichen)
 
-⚠️ **WICHTIG**: Ändern Sie dieses Passwort sofort nach der ersten Anmeldung!
+Das Passwort wird **nur einmal** in der Konsole beim Serverstart angezeigt:
 
-### Neue Benutzer erstellen
-
-Öffnen Sie die Browser-Konsole (F12) und verwenden Sie:
-
-```javascript
-// Neuen Benutzer erstellen
-Users.createUser('benutzername', 'passwort', 'user');
-
-// Neuen Admin erstellen
-Users.createUser('admin2', 'sicheres_passwort', 'admin');
+```
+======================================================================
+✅ Standard-Admin-Benutzer erstellt:
+   Benutzername: admin
+   Passwort: [Generiertes sicheres Passwort]
+   
+   ⚠️  WICHTIG: Ändern Sie das Passwort nach der ersten Anmeldung!
+======================================================================
 ```
 
-### Benutzer verwalten
-
-```javascript
-// Alle Benutzer anzeigen
-Users.getAllUsers();
-
-// Benutzer löschen
-Users.deleteUser('benutzername');
-
-// Passwort ändern
-Users.changePassword('benutzername', 'altes_passwort', 'neues_passwort');
-```
+**⚠️ WICHTIG:** Notieren Sie sich das Passwort sofort! Es wird nicht erneut angezeigt.
 
 ## 📁 Projektstruktur
 
 ```
 Hive-panel/
-├── index.html              # Login-Seite
-├── dashboard.html          # Dashboard nach Login
-├── styles.css              # Zentrales CSS für alle Seiten
-├── js/
-│   ├── auth.js            # Session-Management & Authentifizierung
-│   ├── users.js           # Benutzerverwaltung mit bcrypt
-│   ├── ratelimit.js       # Rate-Limiting-System
-│   └── login.js           # Login-Logik mit reCAPTCHA
-├── lib/
-│   └── bcrypt.js          # bcrypt.js Bibliothek (lokal)
-├── data/                  # Datenverzeichnis (automatisch erstellt)
-│   └── users.json         # Benutzerdaten (im .gitignore)
-├── .gitignore             # Git-Ausschlüsse
-├── package.json           # NPM Konfiguration
-└── README.md              # Diese Datei
+├── server.js                    # Express.js Server (Haupteinstiegspunkt)
+├── package.json                 # NPM Dependencies
+├── .env                         # Umgebungsvariablen (nicht in Git)
+├── .env.example                 # Beispiel für .env
+│
+├── routes/                      # API-Routen
+│   ├── auth.js                 # Login/Logout/Status Endpunkte
+│   └── users.js                # Benutzerverwaltung
+│
+├── middleware/                  # Express Middleware
+│   └── sessionValidation.js    # Session-Timeout und Validierung
+│
+├── html/utils/                  # Server-Utilities
+│   ├── logger.js               # Winston Logger
+│   ├── config.js               # Sicherheits-Konfiguration
+│   ├── validateEnv.js          # Umgebungsvariablen-Validierung
+│   ├── fileOperations.js       # Atomic File Operations
+│   ├── recaptcha.js            # reCAPTCHA-Verifikation
+│   └── loginAttempts.js        # Login-Versuch-Tracking
+│
+├── js/                          # Frontend JavaScript
+│   ├── auth.js                 # Client-seitige Auth-Verwaltung
+│   └── login.js                # Login-Formular-Logik
+│
+├── data/                        # Datenverzeichnis
+│   └── users.json              # Benutzerdaten (nicht in Git)
+│
+├── sessions/                    # Session-Store (nicht in Git)
+├── logs/                        # Server-Logs (nicht in Git)
+│
+├── index.html                   # Login-Seite
+├── dashboard.html               # Dashboard
+└── styles.css                   # CSS Styling
 ```
 
-## 🔒 Sicherheitshinweise
-
-### Passwort-Sicherheit
-- ✅ Alle Passwörter werden mit **bcrypt** (10 Salz-Runden) gehasht
-- ✅ Passwort-Hashes werden in LocalStorage gespeichert
-- ✅ Original-Passwörter sind **niemals** abrufbar
-- ⚠️ Mindestlänge: 6 Zeichen (kann in `users.js` angepasst werden)
-
-### Rate Limiting
-Das System trackt Fehlversuche pro Benutzername:
-- Nach 5 Fehlversuchen: 1 Minute Sperre
-- Nach 10 Fehlversuchen: 5 Minuten Sperre
-- Nach 20 Fehlversuchen: 1 Stunde Sperre
-- Nach mehr als 20 Fehlversuchen: 24 Stunden Sperre
-
-Die Sperre wird automatisch nach erfolgreicher Anmeldung zurückgesetzt.
+## 🔒 Sicherheitsfeatures
 
 ### Session-Management
-- Sessions werden in LocalStorage gespeichert
-- Standard-Session-Dauer: 24 Stunden
-- Automatische Weiterleitung bei abgelaufener Session
-- Sichere Logout-Funktion
+- **Inaktivitäts-Timeout**: Sessions werden nach 10 Minuten Inaktivität automatisch beendet
+- **Rolling Sessions**: Aktivität verlängert die Session-Dauer
+- **Server-Restart-Protection**: Sessions werden bei Server-Neustart invalidiert
+- **Secure Cookies**: httpOnly, sameSite=strict, secure in Production
 
-### Datenspeicherung
-⚠️ **LocalStorage-Limitierungen**:
-- Daten werden nur im Browser gespeichert
-- Keine Server-seitige Datenpersistenz
-- Daten können durch Browser-Cache-Löschung verloren gehen
+### Rate Limiting
+- **5 Login-Versuche** pro 15 Minuten
+- IP-basiertes und Username-basiertes Tracking
+- Automatisches Zurücksetzen nach erfolgreicher Anmeldung
 
-Für Produktivumgebungen empfohlen:
-- Backend-Server mit Datenbank (z.B. MongoDB, PostgreSQL)
-- Server-seitige Session-Verwaltung
-- HTTPS-Verschlüsselung
+### Passwort-Sicherheit
+- ✅ Bcrypt-Hashing mit 10 Salt-Runden
+- ✅ Mindestlänge: 16 Zeichen für Admin-Passwörter
+- ✅ Automatische Generierung mit Groß-/Kleinbuchstaben, Zahlen und Sonderzeichen
+- ✅ Passwörter werden niemals im Klartext gespeichert oder geloggt
 
-### Weitere Sicherheitsmaßnahmen
-- ✅ Eingabevalidierung auf Client-Seite
-- ✅ XSS-Schutz durch sichere DOM-Manipulation
-- ✅ CSRF-Schutz durch Session-Validierung
-- ⚠️ Für Produktion: Server-seitige Validierung erforderlich
+### Security Headers (Helmet)
+- Content Security Policy (CSP)
+- X-Content-Type-Options: nosniff
+- X-Frame-Options: DENY
+- Strict-Transport-Security (HSTS)
 
-## 🌐 Browser-Kompatibilität
+### Logging
+- Separate Logs für allgemeine Events und Security-Events
+- Automatische Log-Rotation (max 5MB pro Datei)
+- Detaillierte Login-Attempt-Logs
 
-Getestet und unterstützt in:
-- ✅ Chrome/Edge (v90+)
-- ✅ Firefox (v88+)
-- ✅ Safari (v14+)
-- ✅ Opera (v76+)
+## 🌐 API-Endpunkte
 
-Benötigte Browser-Features:
-- LocalStorage API
-- ES6+ JavaScript
-- CSS Grid & Flexbox
+### Authentication
+- `POST /api/auth/login` - Login mit Username, Password und optional reCAPTCHA
+- `POST /api/auth/logout` - Logout (Session beenden)
+- `GET /api/auth/status` - Aktuellen Auth-Status abrufen
 
-## 📱 Responsive Breakpoints
-
-- **Desktop**: > 768px
-- **Tablet**: 480px - 768px
-- **Mobile**: < 480px
+### Configuration
+- `GET /api/csrf-token` - CSRF-Token abrufen
+- `GET /api/recaptcha-config` - reCAPTCHA-Konfiguration (Site Key)
 
 ## 🛠️ Technologie-Stack
 
-- **HTML5**: Semantische Struktur
-- **CSS3**: Modernes Styling (CSS Variables, Grid, Flexbox)
-- **JavaScript (ES6+)**: Moderne JavaScript-Features
-- **bcrypt.js**: Passwort-Hashing (lokal eingebunden)
-- **Google reCAPTCHA v2**: Bot-Schutz
-- **LocalStorage API**: Client-seitige Datenspeicherung
+### Backend
+- **Express.js** - Web-Framework
+- **bcrypt** - Passwort-Hashing
+- **express-session** + **session-file-store** - Session-Management
+- **helmet** - Security Headers
+- **express-rate-limit** - Rate Limiting
+- **winston** - Logging
+- **csurf** - CSRF-Protection
+- **dotenv** - Umgebungsvariablen
 
-## 📝 Lizenz
+### Frontend
+- **HTML5** - Semantische Struktur
+- **CSS3** - Modernes Styling
+- **Vanilla JavaScript** - Keine Frameworks
+- **Fetch API** - HTTP-Requests
 
-Dieses Projekt ist Open Source. Verwenden Sie es frei für persönliche oder kommerzielle Projekte.
+## 📝 Entwicklung
+
+### Server im Development-Modus starten
+```bash
+npm run dev
+```
+
+Dies startet den Server mit nodemon, der automatisch bei Dateiänderungen neustartet.
+
+### Logs anzeigen
+Logs werden in das `logs/` Verzeichnis geschrieben:
+- `logs/combined.log` - Alle Logs
+- `logs/error.log` - Nur Fehler
+- `logs/security.log` - Security-Events (Login-Versuche, etc.)
+
+### Umgebungen
+- `development` - Ausführliche Logs in der Konsole, kein HTTPS-Enforcement
+- `production` - Reduzierte Logs, HTTPS-Enforcement, secure Cookies
+
+## ⚠️ Produktions-Deployment
+
+Für den Produktionseinsatz:
+
+1. **NODE_ENV auf production setzen:**
+```env
+NODE_ENV=production
+```
+
+2. **Sicheren SESSION_SECRET generieren:**
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
+3. **reCAPTCHA aktivieren** (Site Key und Secret Key konfigurieren)
+
+4. **HTTPS verwenden:** Der Server erzwingt HTTPS in der Produktion
+
+5. **Reverse Proxy einrichten** (z.B. nginx) für:
+   - SSL/TLS-Terminierung
+   - Load Balancing
+   - Static File Caching
+
+6. **Process Manager verwenden** (z.B. PM2):
+```bash
+npm install -g pm2
+pm2 start server.js --name hive-panel
+pm2 save
+pm2 startup
+```
 
 ## 🤝 Beitragen
 
 Verbesserungsvorschläge und Pull Requests sind willkommen!
-
-## ⚠️ Haftungsausschluss
-
-Diese Implementation verwendet LocalStorage für Demonstrationszwecke. Für Produktivumgebungen sollte:
-- Ein Backend-Server implementiert werden
-- Eine richtige Datenbank verwendet werden
-- HTTPS-Verschlüsselung aktiviert sein
-- Server-seitige Validierung implementiert werden
-- Professionelle Session-Management-Lösungen verwendet werden
 
 ## 📞 Support
 
@@ -238,3 +269,4 @@ Bei Fragen oder Problemen öffnen Sie bitte ein Issue im Repository.
 ---
 
 **Entwickelt mit ❤️ für sichere Web-Authentifizierung**
+

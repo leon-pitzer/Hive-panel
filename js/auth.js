@@ -6,138 +6,124 @@
 const Auth = (function() {
     'use strict';
     
-    const SESSION_KEY = 'hive_session';
-    const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+    const SESSION_CHECK_INTERVAL = 60 * 1000; // Check every minute
+    let sessionCheckTimer = null;
     
     /**
-     * Creates a new user session
-     * @param {string} username - Username
-     * @param {string} role - User role
-     * @returns {Object} Session object
+     * Checks authentication status with server
+     * @returns {Promise<Object>} Auth status { authenticated: boolean, user?: Object }
      */
-    function createSession(username, role = 'user') {
-        const session = {
-            username: username,
-            role: role,
-            loginTime: new Date().toISOString(),
-            expiresAt: new Date(Date.now() + SESSION_DURATION).toISOString(),
-            sessionId: generateSessionId()
-        };
-        
+    async function checkAuthStatus() {
         try {
-            localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-            return session;
-        } catch (error) {
-            console.error('Failed to create session:', error);
-            return null;
-        }
-    }
-    
-    /**
-     * Retrieves the current session
-     * @returns {Object|null} Session object or null if no valid session
-     */
-    function getSession() {
-        try {
-            const sessionData = localStorage.getItem(SESSION_KEY);
-            if (!sessionData) {
-                return null;
+            const response = await fetch('/api/auth/status', {
+                method: 'GET',
+                credentials: 'same-origin'
+            });
+            
+            if (!response.ok) {
+                return { authenticated: false };
             }
             
-            const session = JSON.parse(sessionData);
-            
-            // Check if session has expired
-            if (new Date(session.expiresAt) < new Date()) {
-                logout();
-                return null;
-            }
-            
-            return session;
+            const data = await response.json();
+            return data;
         } catch (error) {
-            console.error('Failed to retrieve session:', error);
-            return null;
+            console.error('Error checking auth status:', error);
+            return { authenticated: false };
         }
     }
     
     /**
      * Checks if user is authenticated
-     * @returns {boolean} True if authenticated, false otherwise
+     * @returns {Promise<boolean>} True if authenticated, false otherwise
      */
-    function isAuthenticated() {
-        const session = getSession();
-        return session !== null;
+    async function isAuthenticated() {
+        const status = await checkAuthStatus();
+        return status.authenticated;
     }
     
     /**
      * Logs out the current user
+     * @returns {Promise<boolean>} Success status
      */
-    function logout() {
+    async function logout() {
         try {
-            localStorage.removeItem(SESSION_KEY);
-        } catch (error) {
-            console.error('Failed to logout:', error);
-        }
-    }
-    
-    /**
-     * Generates a cryptographically secure random session ID
-     * @returns {string} Random session ID
-     */
-    function generateSessionId() {
-        // Use Web Crypto API for better security
-        if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
-            const array = new Uint32Array(3);
-            crypto.getRandomValues(array);
-            return 'session_' + Array.from(array).map(n => n.toString(36)).join('_') + 
-                   '_' + Date.now().toString(36);
-        }
-        // Fallback to Math.random() if crypto API not available
-        return 'session_' + Math.random().toString(36).substr(2, 9) + 
-               '_' + Date.now().toString(36);
-    }
-    
-    /**
-     * Gets the current username from session
-     * @returns {string|null} Username or null
-     */
-    function getCurrentUsername() {
-        const session = getSession();
-        return session ? session.username : null;
-    }
-    
-    /**
-     * Gets the current user role from session
-     * @returns {string|null} User role or null
-     */
-    function getCurrentUserRole() {
-        const session = getSession();
-        return session ? session.role : null;
-    }
-    
-    /**
-     * Extends the current session
-     */
-    function extendSession() {
-        const session = getSession();
-        if (session) {
-            session.expiresAt = new Date(Date.now() + SESSION_DURATION).toISOString();
-            try {
-                localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-            } catch (error) {
-                console.error('Failed to extend session:', error);
+            const response = await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'same-origin'
+            });
+            
+            if (response.ok) {
+                // Stop session check timer
+                if (sessionCheckTimer) {
+                    clearInterval(sessionCheckTimer);
+                    sessionCheckTimer = null;
+                }
+                
+                // Redirect to login page
+                window.location.href = '/';
+                return true;
             }
+            
+            return false;
+        } catch (error) {
+            console.error('Logout error:', error);
+            return false;
         }
+    }
+    
+    /**
+     * Starts periodic session validation
+     * Checks if session is still valid and redirects to login if not
+     */
+    function startSessionValidation() {
+        // Clear any existing timer
+        if (sessionCheckTimer) {
+            clearInterval(sessionCheckTimer);
+        }
+        
+        // Check session periodically
+        sessionCheckTimer = setInterval(async () => {
+            const status = await checkAuthStatus();
+            
+            if (!status.authenticated) {
+                // Session expired, redirect to login
+                clearInterval(sessionCheckTimer);
+                sessionCheckTimer = null;
+                
+                // Show message and redirect
+                alert('Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an.');
+                window.location.href = '/';
+            }
+        }, SESSION_CHECK_INTERVAL);
+    }
+    
+    /**
+     * Stops session validation
+     */
+    function stopSessionValidation() {
+        if (sessionCheckTimer) {
+            clearInterval(sessionCheckTimer);
+            sessionCheckTimer = null;
+        }
+    }
+    
+    /**
+     * Gets the current user info from server
+     * @returns {Promise<Object|null>} User object or null
+     */
+    async function getCurrentUser() {
+        const status = await checkAuthStatus();
+        return status.authenticated ? status.user : null;
     }
     
     // Public API
     return {
-        createSession,
-        getSession,
+        checkAuthStatus,
         isAuthenticated,
         logout,
-        getCurrentUsername,
-        getCurrentUserRole,
-        extendSession
+        startSessionValidation,
+        stopSessionValidation,
+        getCurrentUser
     };
 })();
 
