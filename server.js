@@ -20,6 +20,7 @@ const { logger } = require('./html/utils/logger');
 const { validateEnv, getEnvInfo } = require('./html/utils/validateEnv');
 const config = require('./html/utils/config');
 const { getRecaptchaConfig } = require('./html/utils/recaptcha');
+const { startPeriodicCleanup } = require('./html/utils/registrationCleanup');
 
 // Import middleware
 const { sessionValidation } = require('./middleware/sessionValidation');
@@ -218,6 +219,9 @@ async function startServer() {
     try {
         // Ensure default admin exists
         await ensureDefaultAdmin();
+
+        // Start periodic cleanup for old registration requests
+        startPeriodicCleanup();
 
         // Start listening
         server = app.listen(PORT, () => {

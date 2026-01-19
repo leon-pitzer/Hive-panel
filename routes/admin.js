@@ -1,6 +1,6 @@
 /**
  * Admin routes
- * Handles administrative functions: user management, role management
+ * Handles administrative functions: user management, role management, registration requests
  */
 
 const express = require('express');
@@ -17,6 +17,7 @@ const { getUserByUsername, generateSecurePassword } = require('./users');
 const router = express.Router();
 const USERS_FILE = path.join(__dirname, '../data/users.json');
 const ROLES_FILE = path.join(__dirname, '../data/roles.json');
+const REQUESTS_FILE = path.join(__dirname, '../data/registration-requests.json');
 
 /**
  * GET /api/admin/accounts
@@ -558,5 +559,215 @@ router.delete('/roles/:id', requirePermission('roles.manage'), async (req, res) 
         });
     }
 });
+
+/**
+ * GET /api/admin/registration-requests
+ * List all registration requests (requires: accounts.requests or accounts.manage or *)
+ */
+router.get('/registration-requests', requirePermission(['accounts.requests', 'accounts.manage']), async (req, res) => {
+    try {
+        // TODO: Replace with MySQL query in future
+        // SELECT * FROM registration_requests ORDER BY createdAt DESC
+        const requestsData = await readJsonFile(REQUESTS_FILE, { requests: [] });
+        
+        // Remove password hashes from response
+        const safeRequests = requestsData.requests.map(request => {
+            const { passwordHash, ...safeRequest } = request;
+            return safeRequest;
+        });
+        
+        res.json({
+            success: true,
+            requests: safeRequests
+        });
+    } catch (error) {
+        logger.error('Error listing registration requests:', { error: error.message });
+        res.status(500).json({
+            success: false,
+            error: 'Fehler beim Laden der Registrierungsanfragen.'
+        });
+    }
+});
+
+/**
+ * GET /api/admin/registration-requests/count
+ * Get count of pending registration requests (requires: accounts.requests or accounts.manage or *)
+ */
+router.get('/registration-requests/count', requirePermission(['accounts.requests', 'accounts.manage']), async (req, res) => {
+    try {
+        // TODO: Replace with MySQL query in future
+        // SELECT COUNT(*) FROM registration_requests WHERE status = 'pending'
+        const requestsData = await readJsonFile(REQUESTS_FILE, { requests: [] });
+        const pendingCount = requestsData.requests.filter(r => r.status === 'pending').length;
+        
+        res.json({
+            success: true,
+            count: pendingCount
+        });
+    } catch (error) {
+        logger.error('Error getting registration requests count:', { error: error.message });
+        res.status(500).json({
+            success: false,
+            error: 'Fehler beim Zählen der Anfragen.'
+        });
+    }
+});
+
+/**
+ * POST /api/admin/registration-requests/:id/approve
+ * Approve a registration request (requires: accounts.requests or accounts.manage or *)
+ */
+router.post('/registration-requests/:id/approve', requirePermission(['accounts.requests', 'accounts.manage']), async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        // Find the request
+        const requestsData = await readJsonFile(REQUESTS_FILE, { requests: [] });
+        const request = requestsData.requests.find(r => r.id === id);
+        
+        if (!request) {
+            return res.status(404).json({
+                success: false,
+                error: 'Registrierungsanfrage nicht gefunden.'
+            });
+        }
+        
+        if (request.status !== 'pending') {
+            return res.status(400).json({
+                success: false,
+                error: 'Diese Anfrage wurde bereits bearbeitet.'
+            });
+        }
+        
+        // Check if username already exists (in case it was created in the meantime)
+        const existingUser = await getUserByUsername(request.username);
+        if (existingUser) {
+            return res.status(409).json({
+                success: false,
+                error: 'Benutzername ist bereits vergeben.'
+            });
+        }
+        
+        // Create user account
+        const newUser = {
+            username: request.username,
+            email: request.email,
+            passwordHash: request.passwordHash,
+            role: 'user',
+            permissions: [],
+            roles: [],
+            createdAt: new Date().toISOString(),
+            approvedBy: req.session.username
+        };
+        
+        // Add to users file
+        const userSuccess = await updateJsonFile(USERS_FILE, (users) => {
+            users.push(newUser);
+            return users;
+        }, []);
+        
+        if (!userSuccess) {
+            throw new Error('Failed to create user');
+        }
+        
+        // Remove from requests (or mark as approved)
+        const requestSuccess = await updateJsonFile(REQUESTS_FILE, (data) => {
+            data.requests = data.requests.filter(r => r.id !== id);
+            return data;
+        }, { requests: [] });
+        
+        if (!requestSuccess) {
+            logger.warn('User created but failed to remove registration request', { requestId: id });
+        }
+        
+        securityLogger.info('Registration request approved', {
+            admin: req.session.username,
+            requestId: id,
+            username: request.username
+        });
+        
+        res.json({
+            success: true,
+            message: 'Registrierungsanfrage erfolgreich genehmigt.'
+        });
+        
+    } catch (error) {
+        logger.error('Error approving registration request:', { error: error.message, requestId: req.params.id });
+        res.status(500).json({
+            success: false,
+            error: 'Fehler beim Genehmigen der Anfrage.'
+        });
+    }
+});
+
+/**
+ * POST /api/admin/registration-requests/:id/reject
+ * Reject a registration request (requires: accounts.requests or accounts.manage or *)
+ */
+router.post('/registration-requests/:id/reject',
+    requirePermission(['accounts.requests', 'accounts.manage']),
+    [
+        body('reason').optional().trim().isLength({ max: 500 })
+    ],
+    async (req, res) => {
+        try {
+            // Validate input
+            const errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Ungültige Eingabe',
+                    errors: errors.array()
+                });
+            }
+            
+            const { id } = req.params;
+            const { reason } = req.body;
+            
+            // Update request status
+            let found = false;
+            const success = await updateJsonFile(REQUESTS_FILE, (data) => {
+                const requestIndex = data.requests.findIndex(r => r.id === id);
+                if (requestIndex !== -1) {
+                    found = true;
+                    data.requests[requestIndex].status = 'rejected';
+                    data.requests[requestIndex].rejectedAt = new Date().toISOString();
+                    data.requests[requestIndex].rejectedBy = req.session.username;
+                    data.requests[requestIndex].rejectionReason = reason || null;
+                }
+                return data;
+            }, { requests: [] });
+            
+            if (!found) {
+                return res.status(404).json({
+                    success: false,
+                    error: 'Registrierungsanfrage nicht gefunden.'
+                });
+            }
+            
+            if (success) {
+                securityLogger.info('Registration request rejected', {
+                    admin: req.session.username,
+                    requestId: id,
+                    reason: reason || 'No reason provided'
+                });
+                
+                res.json({
+                    success: true,
+                    message: 'Registrierungsanfrage erfolgreich abgelehnt.'
+                });
+            } else {
+                throw new Error('Failed to reject request');
+            }
+            
+        } catch (error) {
+            logger.error('Error rejecting registration request:', { error: error.message, requestId: req.params.id });
+            res.status(500).json({
+                success: false,
+                error: 'Fehler beim Ablehnen der Anfrage.'
+            });
+        }
+    }
+);
 
 module.exports = router;
