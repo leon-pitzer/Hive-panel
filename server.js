@@ -74,17 +74,22 @@ try {
 const fileStore = new FileStore({
     path: sessionsDir,
     ttl: config.session.cookie.maxAge / 1000, // Convert to seconds
-    retries: 5,
-    retryDelay: 200,
+    retries: 3,
+    retryDelay: 100,
     reapInterval: 60 * 60, // Clean up every hour
     logFn: (error) => {
         // Custom error logging for session store
         if (error) {
+            const errorStr = String(error);
+            // Ignoriere ENOENT-Fehler (Session existiert nicht mehr)
+            if (errorStr.includes('ENOENT') || error.code === 'ENOENT') {
+                // Diese Fehler sind normal, wenn Sessions ablaufen/gelöscht werden
+                return;
+            }
+            // Logge nur echte Fehler
             logger.error('Session file store error', { 
-                error: error.message || String(error),
-                stack: error.stack,
-                code: error.code,
-                errno: error.errno
+                error: error.message || errorStr,
+                code: error.code
             });
         }
     }
