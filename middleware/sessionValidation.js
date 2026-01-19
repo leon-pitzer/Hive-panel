@@ -103,6 +103,8 @@ function initializeSession(session, user) {
     session.userId = user.id || user.username;
     session.username = user.username;
     session.role = user.role;
+    session.permissions = user.permissions || [];
+    session.roles = user.roles || [];
     session.loginTime = Date.now();
     session.lastActivity = Date.now();
     session.restartToken = RESTART_TOKEN;

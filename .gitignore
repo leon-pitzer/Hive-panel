@@ -7,6 +7,8 @@ yarn-error.log*
 
 # User data (sensitive)
 data/users.json
+data/registration-requests.json
+data/roles.json
 
 # IDE files
 .idea/

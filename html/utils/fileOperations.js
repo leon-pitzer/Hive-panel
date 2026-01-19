@@ -1,6 +1,28 @@
 /**
  * File operations with atomic writes and locking
  * Ensures safe concurrent file access
+ * 
+ * TODO: MySQL Migration Notes
+ * ===========================
+ * All JSON file operations in this module will need to be replaced with MySQL queries:
+ * 
+ * readJsonFile -> SELECT queries
+ * writeJsonFile -> INSERT/UPDATE queries with transactions
+ * updateJsonFile -> UPDATE queries with transactions and row locking
+ * 
+ * Migration Strategy:
+ * 1. Create MySQL database schema (see sql/schema.sql)
+ * 2. Replace all readJsonFile calls with prepared SELECT statements
+ * 3. Replace all writeJsonFile calls with INSERT/UPDATE in transactions
+ * 4. Replace all updateJsonFile calls with SELECT FOR UPDATE + UPDATE
+ * 5. Add database connection pool management
+ * 6. Maintain backward compatibility during transition
+ * 7. Add migration script to transfer existing JSON data to MySQL
+ * 
+ * Tables needed:
+ * - users (id, username, password_hash, email, display_name, role, permissions, roles, created_at, approved_by)
+ * - roles (id, name, permissions, created_at, created_by, updated_at, updated_by)
+ * - registration_requests (id, username, email, password_hash, status, created_at, ip, rejection_reason, rejected_at, rejected_by)
  */
 
 const fs = require('fs').promises;

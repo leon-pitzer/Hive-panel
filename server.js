@@ -20,6 +20,7 @@ const { logger } = require('./html/utils/logger');
 const { validateEnv, getEnvInfo } = require('./html/utils/validateEnv');
 const config = require('./html/utils/config');
 const { getRecaptchaConfig } = require('./html/utils/recaptcha');
+const { startPeriodicCleanup } = require('./html/utils/registrationCleanup');
 
 // Import middleware
 const { sessionValidation } = require('./middleware/sessionValidation');
@@ -27,6 +28,7 @@ const { sessionValidation } = require('./middleware/sessionValidation');
 // Import routes
 const authRoutes = require('./routes/auth');
 const accountRoutes = require('./routes/account');
+const adminRoutes = require('./routes/admin');
 const { ensureDefaultAdmin } = require('./routes/users');
 
 // Validate environment variables
@@ -137,6 +139,7 @@ if (process.env.NODE_ENV === 'production') {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
+app.use('/api/admin', adminRoutes);
 
 // CSRF token endpoint
 app.get('/api/csrf-token', csrfProtection, (req, res) => {
@@ -216,6 +219,9 @@ async function startServer() {
     try {
         // Ensure default admin exists
         await ensureDefaultAdmin();
+
+        // Start periodic cleanup for old registration requests
+        startPeriodicCleanup();
 
         // Start listening
         server = app.listen(PORT, () => {

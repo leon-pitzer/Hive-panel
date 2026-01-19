@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive Panel - Kontenverwaltung</title>
+    
+    <!-- CRITICAL: Dark Mode BEFORE CSS loading -->
+    <script>
+        (function() {
+            const darkMode = localStorage.getItem('hive-panel-dark-mode') === 'true';
+            if (darkMode) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
+    
+    <link rel="stylesheet" href="../../styles.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span class="sidebar-title">Hive Panel</span>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Sidebar">
+                    <i data-lucide="panel-left-close"></i>
+                </button>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="/dashboard.html" class="sidebar-item">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/html/admin/accounts.html" class="sidebar-item active">
+                    <i data-lucide="users"></i>
+                    <span>Konten</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="sidebar-account-button" class="sidebar-item sidebar-account">
+                    <i data-lucide="user-circle"></i>
+                    <span id="sidebar-username-display"></span>
+                </button>
+                <button id="sidebar-logout-button" class="sidebar-item sidebar-logout">
+                    <i data-lucide="log-out"></i>
+                    <span>Abmelden</span>
+                </button>
+            </div>
+        </aside>
+        
+        <!-- Mobile Overlay -->
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+        
+        <!-- Main Content -->
+        <div class="main-wrapper">
+            <header class="dashboard-header">
+                <div class="header-content">
+                    <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle Menu">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="header-right">
+                    </div>
+                </div>
+            </header>
+        
+            <main class="dashboard-main">
+                <div class="dashboard-content">
+                    <div class="dashboard-card">
+                        <h2><i data-lucide="users" style="width: 24px; height: 24px; display: inline-block; vertical-align: middle;"></i> Kontenverwaltung</h2>
+                        <p>Verwalten Sie Benutzerkonten und Rollen im System.</p>
+                    </div>
+                    
+                    <!-- Tabs -->
+                    <div class="dashboard-card">
+                        <div class="tabs">
+                            <button class="tab-button active" data-tab="accounts">Konten</button>
+                            <button class="tab-button" data-tab="roles">Rollen</button>
+                            <button class="tab-button" data-tab="registration-requests">
+                                Registrierungsanfragen
+                                <span id="registration-requests-badge" class="badge badge-warning" style="margin-left: 0.5rem; display: none;">0</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Accounts Tab -->
+                        <div id="accounts-tab" class="tab-content active">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                                <h3>Alle Konten</h3>
+                                <button id="create-account-btn" class="btn btn-primary" style="width: auto;">
+                                    <i data-lucide="user-plus"></i>
+                                    <span>Konto erstellen</span>
+                                </button>
+                            </div>
+                            
+                            <div class="table-container">
+                                <table class="data-table" id="accounts-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Benutzername</th>
+                                            <th>E-Mail</th>
+                                            <th>Rolle</th>
+                                            <th>Berechtigungen</th>
+                                            <th>Aktionen</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="accounts-tbody">
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; padding: var(--spacing-xl);">
+                                                <div class="spinner"></div>
+                                                <p style="margin-top: var(--spacing-md); color: var(--text-secondary);">Lade Konten...</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Roles Tab -->
+                        <div id="roles-tab" class="tab-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                                <h3>Alle Rollen</h3>
+                                <button id="create-role-btn" class="btn btn-primary" style="width: auto;">
+                                    <i data-lucide="shield-plus"></i>
+                                    <span>Rolle erstellen</span>
+                                </button>
+                            </div>
+                            
+                            <div class="table-container">
+                                <table class="data-table" id="roles-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Berechtigungen</th>
+                                            <th>Aktionen</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="roles-tbody">
+                                        <tr>
+                                            <td colspan="3" style="text-align: center; padding: var(--spacing-xl);">
+                                                <div class="spinner"></div>
+                                                <p style="margin-top: var(--spacing-md); color: var(--text-secondary);">Lade Rollen...</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Registration Requests Tab -->
+                        <div id="registration-requests-tab" class="tab-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg);">
+                                <h3>Registrierungsanfragen</h3>
+                            </div>
+                            
+                            <div class="table-container">
+                                <table class="data-table" id="registration-requests-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Benutzername</th>
+                                            <th>E-Mail</th>
+                                            <th>Status</th>
+                                            <th>Erstellt am</th>
+                                            <th>Aktionen</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="registration-requests-tbody">
+                                        <tr>
+                                            <td colspan="5" style="text-align: center; padding: var(--spacing-xl);">
+                                                <div class="spinner"></div>
+                                                <p style="margin-top: var(--spacing-md); color: var(--text-secondary);">Lade Registrierungsanfragen...</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            
+            <footer class="dashboard-footer">
+                <p>&copy; 2025 Iownme. Alle Rechte vorbehalten.</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- Create/Edit Account Modal -->
+    <div id="account-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="account-modal-title">Konto erstellen</h3>
+                <button class="modal-close" data-modal="account-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="account-form">
+                    <div class="form-group">
+                        <label for="account-username">Benutzername *</label>
+                        <input type="text" id="account-username" required 
+                               pattern="[a-zA-Z0-9_-]+"
+                               minlength="3"
+                               maxlength="30"
+                               placeholder="Benutzername">
+                        <small class="form-help">3-30 Zeichen, nur Buchstaben, Zahlen, _ und -</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account-email">E-Mail *</label>
+                        <input type="email" id="account-email" required placeholder="benutzer@beispiel.de">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account-password">Passwort *</label>
+                        <div style="display: flex; gap: var(--spacing-sm);">
+                            <input type="password" id="account-password" required 
+                                   minlength="8"
+                                   placeholder="Mindestens 8 Zeichen"
+                                   style="flex: 1;">
+                            <button type="button" id="generate-password-account" class="btn btn-secondary" style="width: auto;">
+                                <i data-lucide="refresh-cw"></i>
+                            </button>
+                        </div>
+                        <small class="form-help">Mindestens 8 Zeichen</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account-displayname">Anzeigename</label>
+                        <input type="text" id="account-displayname" maxlength="50" placeholder="Vollständiger Name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="account-role">Rolle</label>
+                        <select id="account-role" class="form-control">
+                            <option value="">Keine Rolle</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Berechtigungen</label>
+                        <div class="checkbox-group" id="account-permissions">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="accounts.manage">
+                                <span>accounts.manage - Konten verwalten</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="accounts.view">
+                                <span>accounts.view - Konten ansehen</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="accounts.requests">
+                                <span>accounts.requests - Kontoanfragen verwalten</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="roles.manage">
+                                <span>roles.manage - Rollen verwalten</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="*">
+                                <span>* - Wildcard (alle Berechtigungen)</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-modal="account-modal">Abbrechen</button>
+                <button type="submit" form="account-form" class="btn btn-primary" id="account-submit-btn">Erstellen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create/Edit Role Modal -->
+    <div id="role-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="role-modal-title">Rolle erstellen</h3>
+                <button class="modal-close" data-modal="role-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="role-form">
+                    <div class="form-group">
+                        <label for="role-name">Rollenname *</label>
+                        <input type="text" id="role-name" required 
+                               minlength="2"
+                               maxlength="50"
+                               placeholder="z.B. Administrator, Moderator">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Berechtigungen</label>
+                        <div class="checkbox-group" id="role-permissions">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="accounts.manage">
+                                <span>accounts.manage - Konten verwalten</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="accounts.view">
+                                <span>accounts.view - Konten ansehen</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="accounts.requests">
+                                <span>accounts.requests - Kontoanfragen verwalten</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="roles.manage">
+                                <span>roles.manage - Rollen verwalten</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="*">
+                                <span>* - Wildcard (alle Berechtigungen)</span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-modal="role-modal">Abbrechen</button>
+                <button type="submit" form="role-form" class="btn btn-primary" id="role-submit-btn">Erstellen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 id="delete-modal-title">Bestätigung erforderlich</h3>
+                <button class="modal-close" data-modal="delete-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="delete-modal-message">Möchten Sie dieses Element wirklich löschen?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-modal="delete-modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="delete-confirm-btn" style="background: var(--error);">Löschen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Reject Modal -->
+    <div id="reject-modal" class="modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3>Registrierungsanfrage ablehnen</h3>
+                <button class="modal-close" data-modal="reject-modal">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="reject-reason">Grund für die Ablehnung (optional)</label>
+                    <textarea 
+                        id="reject-reason" 
+                        rows="4" 
+                        placeholder="Geben Sie einen optionalen Grund für die Ablehnung ein..."
+                        style="width: 100%; padding: 0.75rem; border: 2px solid #e2e8f0; border-radius: var(--radius-md); font-family: var(--font-family); font-size: 1rem; background: var(--surface); color: var(--text-primary); resize: vertical;"
+                    ></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-modal="reject-modal">Abbrechen</button>
+                <button type="button" class="btn btn-primary" id="reject-confirm-btn" style="background: var(--error);">Ablehnen</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+    
+    <script src="../../js/permissions.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/darkmode.js"></script>
+    <script src="../../js/sidebar.js"></script>
+    <script src="../../js/admin/accounts.js"></script>
+    <script src="../../js/admin/registration-requests.js"></script>
+    <script>
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', async function() {
+            const authStatus = await Auth.checkAuthStatus();
+            
+            if (!authStatus.authenticated) {
+                window.location.href = '/';
+                return;
+            }
+            
+            Auth.startSessionValidation();
+            
+            const user = authStatus.user;
+            const sidebarUsernameDisplay = document.getElementById('sidebar-username-display');
+            
+            if (sidebarUsernameDisplay && user) {
+                sidebarUsernameDisplay.textContent = user.username;
+            }
+            
+            // Logout functionality
+            const sidebarLogoutButton = document.getElementById('sidebar-logout-button');
+            if (sidebarLogoutButton) {
+                sidebarLogoutButton.addEventListener('click', async function() {
+                    await Auth.logout();
+                });
+            }
+            
+            // Initialize Lucide icons
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

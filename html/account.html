@@ -36,6 +36,10 @@
                     <i data-lucide="layout-dashboard"></i>
                     <span>Dashboard</span>
                 </a>
+                <a href="/html/admin/accounts.html" class="sidebar-item" data-permission="accounts.manage" style="display: none;">
+                    <i data-lucide="users-cog"></i>
+                    <span>Account-Verwaltung</span>
+                </a>
             </nav>
             
             <div class="sidebar-footer">
@@ -195,6 +199,7 @@
     <div id="toast" class="toast"></div>
     
     <script src="../js/auth.js"></script>
+    <script src="../js/permissions.js"></script>
     <script src="../js/darkmode.js"></script>
     <script src="../js/password-toggle.js"></script>
     <script src="../js/sidebar.js"></script>
@@ -216,6 +221,11 @@
             
             if (sidebarUsernameDisplay && user) {
                 sidebarUsernameDisplay.textContent = user.username;
+            }
+            
+            // Initialize permission-based UI elements
+            if (typeof Permissions !== 'undefined') {
+                Permissions.initializeUI();
             }
             
             // Logout functionality
