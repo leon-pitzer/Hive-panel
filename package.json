@@ -1,10 +1,11 @@
 {
   "name": "Hive-panel",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sichere Login-Website mit Google reCAPTCHA, bcrypt und Rate Limiting",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "setup": "npm install && cp node_modules/bcryptjs/umd/index.js lib/bcrypt.js"
   },
   "private": true,
   "dependencies": {

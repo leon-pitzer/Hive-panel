@@ -37,6 +37,15 @@ git clone <repository-url>
 cd Hive-panel
 ```
 
+### 1.5 bcrypt.js einrichten (optional)
+Die bcrypt.js Bibliothek ist bereits im `lib/` Ordner enthalten. Falls Sie diese neu generieren möchten:
+
+```bash
+npm run setup
+```
+
+Dies installiert bcryptjs und kopiert die Browser-kompatible Version in den `lib/` Ordner.
+
 ### 2. Google reCAPTCHA konfigurieren
 
 #### reCAPTCHA-Schlüssel erhalten:
@@ -50,7 +59,7 @@ cd Hive-panel
 Öffnen Sie `index.html` und ersetzen Sie den Test-Schlüssel:
 
 ```html
-<!-- Zeile 42 in index.html -->
+<!-- Zeile 49 in index.html -->
 <div class="g-recaptcha" data-sitekey="HIER_IHREN_SITE_KEY_EINFÜGEN"></div>
 ```
 
