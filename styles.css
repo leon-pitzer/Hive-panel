@@ -1092,14 +1092,21 @@ input:focus {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--spacing-md);
+    max-height: calc(100vh - 240px); /* Account for header and footer */
+    overflow-y: auto;
 }
 
 .account-settings-grid .dashboard-card {
     padding: var(--spacing-lg);
+    height: fit-content;
 }
 
 .account-settings-grid .form-group {
     margin-bottom: var(--spacing-md);
+}
+
+.account-settings-grid .form-group:last-of-type {
+    margin-bottom: 0;
 }
 
 .account-settings-grid .form-group input {
@@ -1111,9 +1118,15 @@ input:focus {
     grid-column: 1 / -1;
 }
 
+.account-settings-grid h3 {
+    font-size: 1.125rem;
+    margin-bottom: var(--spacing-md);
+}
+
 @media (max-width: 768px) {
     .account-settings-grid {
         grid-template-columns: 1fr;
+        max-height: none;
     }
 }
 
@@ -1122,6 +1135,20 @@ input:focus {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* Make password change form more compact */
+.account-settings-grid .account-form .form-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    margin-top: var(--spacing-md);
+}
+
+.account-settings-grid .account-form .form-actions .btn {
+    flex: 1;
+    min-width: 150px;
+}
+
 
 /* ===== Cookie Banner ===== */
 .cookie-banner {
