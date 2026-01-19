@@ -28,19 +28,25 @@ function generateSecurePassword() {
     let password = '';
     
     // Ensure at least one of each required type
-    password += uppercase[Math.floor(Math.random() * uppercase.length)];
-    password += lowercase[Math.floor(Math.random() * lowercase.length)];
-    password += numbers[Math.floor(Math.random() * numbers.length)];
-    password += special[Math.floor(Math.random() * special.length)];
+    password += uppercase[crypto.randomInt(0, uppercase.length)];
+    password += lowercase[crypto.randomInt(0, lowercase.length)];
+    password += numbers[crypto.randomInt(0, numbers.length)];
+    password += special[crypto.randomInt(0, special.length)];
     
     // Fill the rest with random characters
     const allChars = uppercase + lowercase + numbers + special;
     for (let i = password.length; i < length; i++) {
-        password += allChars[Math.floor(Math.random() * allChars.length)];
+        password += allChars[crypto.randomInt(0, allChars.length)];
     }
     
-    // Shuffle the password
-    return password.split('').sort(() => Math.random() - 0.5).join('');
+    // Shuffle the password using Fisher-Yates algorithm with crypto
+    const passwordArray = password.split('');
+    for (let i = passwordArray.length - 1; i > 0; i--) {
+        const j = crypto.randomInt(0, i + 1);
+        [passwordArray[i], passwordArray[j]] = [passwordArray[j], passwordArray[i]];
+    }
+    
+    return passwordArray.join('');
 }
 
 /**

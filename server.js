@@ -91,6 +91,17 @@ app.use(express.static(path.join(__dirname), {
     }
 }));
 
+// Enforce HTTPS in production
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+        if (req.header('x-forwarded-proto') !== 'https') {
+            res.redirect(`https://${req.header('host')}${req.url}`);
+        } else {
+            next();
+        }
+    });
+}
+
 // API Routes
 app.use('/api/auth', authRoutes);
 
@@ -151,13 +162,15 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
+let server;
+
 async function startServer() {
     try {
         // Ensure default admin exists
         await ensureDefaultAdmin();
 
         // Start listening
-        app.listen(PORT, () => {
+        server = app.listen(PORT, () => {
             const envInfo = getEnvInfo();
             logger.info('🐝 Hive Panel Server started');
             logger.info(`Environment: ${envInfo.nodeEnv}`);
@@ -173,17 +186,6 @@ async function startServer() {
             console.log(`   reCAPTCHA: ${envInfo.recaptchaEnabled ? '✅ Aktiviert' : '⚠️  Deaktiviert'}`);
             console.log('='.repeat(70) + '\n');
         });
-
-        // Enforce HTTPS in production
-        if (process.env.NODE_ENV === 'production') {
-            app.use((req, res, next) => {
-                if (req.header('x-forwarded-proto') !== 'https') {
-                    res.redirect(`https://${req.header('host')}${req.url}`);
-                } else {
-                    next();
-                }
-            });
-        }
     } catch (error) {
         logger.error('Failed to start server:', { error: error.message });
         process.exit(1);
@@ -205,12 +207,26 @@ process.on('unhandledRejection', (reason, promise) => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
     logger.info('SIGTERM signal received: closing HTTP server');
-    process.exit(0);
+    if (server) {
+        server.close(() => {
+            logger.info('HTTP server closed');
+            process.exit(0);
+        });
+    } else {
+        process.exit(0);
+    }
 });
 
 process.on('SIGINT', () => {
     logger.info('SIGINT signal received: closing HTTP server');
-    process.exit(0);
+    if (server) {
+        server.close(() => {
+            logger.info('HTTP server closed');
+            process.exit(0);
+        });
+    } else {
+        process.exit(0);
+    }
 });
 
 // Start the server
