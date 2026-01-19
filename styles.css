@@ -473,7 +473,6 @@ p {
     padding: var(--spacing-md);
 }
 
-
 .sidebar-item span {
     transition: opacity var(--transition-fast);
     overflow: hidden;
@@ -490,14 +489,13 @@ p {
     font-weight: 500;
 }
 
-.sidebar-account:hover {
+.sidebar-account:hover,
+.sidebar-account.active {
     background: var(--surface-hover);
     color: var(--primary-color);
 }
 
 .sidebar-account.active {
-    background: var(--surface-hover);
-    color: var(--primary-color);
     font-weight: 600;
 }
 
