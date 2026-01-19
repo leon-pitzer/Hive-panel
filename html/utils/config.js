@@ -25,6 +25,13 @@ module.exports = {
         checkInterval: 60 * 1000 // Check every minute
     },
 
+    // Login attempt lockout configuration
+    loginAttempts: {
+        lockout5Attempts: 15 * 60 * 1000,      // 15 minutes for 5 attempts
+        lockout10Attempts: 60 * 60 * 1000,     // 1 hour for 10 attempts
+        lockout20Attempts: 24 * 60 * 60 * 1000 // 24 hours for 20+ attempts
+    },
+
     // Rate limiting configuration
     rateLimit: {
         windowMs: 15 * 60 * 1000, // 15 minutes

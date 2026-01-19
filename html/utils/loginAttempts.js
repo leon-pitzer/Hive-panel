@@ -4,6 +4,7 @@
  */
 
 const { securityLogger } = require('./logger');
+const config = require('./config');
 
 // In-memory store for login attempts
 // In production, consider using Redis or database
@@ -30,15 +31,15 @@ function recordFailedAttempt(identifier) {
     attempts.count++;
     attempts.lastAttempt = now;
 
-    // Calculate lockout based on attempt count
+    // Calculate lockout based on attempt count using config values
     if (attempts.count >= 5) {
         let lockoutDuration;
         if (attempts.count >= 20) {
-            lockoutDuration = 24 * 60 * 60 * 1000; // 24 hours
+            lockoutDuration = config.loginAttempts.lockout20Attempts;
         } else if (attempts.count >= 10) {
-            lockoutDuration = 60 * 60 * 1000; // 1 hour
+            lockoutDuration = config.loginAttempts.lockout10Attempts;
         } else if (attempts.count >= 5) {
-            lockoutDuration = 15 * 60 * 1000; // 15 minutes
+            lockoutDuration = config.loginAttempts.lockout5Attempts;
         }
         
         attempts.lockedUntil = new Date(now + lockoutDuration);
