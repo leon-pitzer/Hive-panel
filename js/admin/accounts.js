@@ -256,7 +256,7 @@
                     <td><strong>${escapeHtml(account.username)}</strong></td>
                     <td>
                         <span class="censored-text" data-email="${escapeHtml(account.email)}" data-censored="true">${censoredEmail}</span>
-                        <button class="btn-reveal" onclick="window.accountsModule.toggleEmail(this)">
+                        <button class="btn-reveal" data-action="toggle-email">
                             <i data-lucide="eye"></i>
                         </button>
                     </td>
@@ -264,10 +264,10 @@
                     <td>${permissionBadges || '<span class="badge">Keine</span>'}</td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn-icon" onclick="window.accountsModule.editAccount('${escapeHtml(account.username)}')" title="Bearbeiten">
+                            <button class="btn-icon" data-action="edit-account" data-username="${escapeHtml(account.username)}" title="Bearbeiten">
                                 <i data-lucide="edit"></i>
                             </button>
-                            <button class="btn-icon btn-danger" onclick="window.accountsModule.deleteAccount('${escapeHtml(account.username)}')" title="Löschen">
+                            <button class="btn-icon btn-danger" data-action="delete-account" data-username="${escapeHtml(account.username)}" title="Löschen">
                                 <i data-lucide="trash-2"></i>
                             </button>
                         </div>
@@ -275,6 +275,25 @@
                 </tr>
             `;
         }).join('');
+        
+        // Add event listeners
+        tbody.querySelectorAll('[data-action="toggle-email"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                toggleEmail(this);
+            });
+        });
+        
+        tbody.querySelectorAll('[data-action="edit-account"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                editAccount(this.getAttribute('data-username'));
+            });
+        });
+        
+        tbody.querySelectorAll('[data-action="delete-account"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                deleteAccount(this.getAttribute('data-username'));
+            });
+        });
         
         lucide.createIcons();
     }
@@ -309,10 +328,10 @@
                     <td>${permissionBadges || '<span class="badge">Keine</span>'}</td>
                     <td>
                         <div class="table-actions">
-                            <button class="btn-icon" onclick="window.accountsModule.editRole('${escapeHtml(role.id)}')" title="Bearbeiten">
+                            <button class="btn-icon" data-action="edit-role" data-role-id="${escapeHtml(role.id)}" title="Bearbeiten">
                                 <i data-lucide="edit"></i>
                             </button>
-                            <button class="btn-icon btn-danger" onclick="window.accountsModule.deleteRole('${escapeHtml(role.id)}')" title="Löschen">
+                            <button class="btn-icon btn-danger" data-action="delete-role" data-role-id="${escapeHtml(role.id)}" title="Löschen">
                                 <i data-lucide="trash-2"></i>
                             </button>
                         </div>
@@ -320,6 +339,19 @@
                 </tr>
             `;
         }).join('');
+        
+        // Add event listeners
+        tbody.querySelectorAll('[data-action="edit-role"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                editRole(this.getAttribute('data-role-id'));
+            });
+        });
+        
+        tbody.querySelectorAll('[data-action="delete-role"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                deleteRole(this.getAttribute('data-role-id'));
+            });
+        });
         
         lucide.createIcons();
     }
@@ -331,7 +363,7 @@
         const roleSelect = document.getElementById('account-role');
         
         roleSelect.innerHTML = '<option value="">Keine Rolle</option>' + 
-            roles.map(role => `<option value="${escapeHtml(role.id)}">${escapeHtml(role.name)}</option>`).join('');
+            roles.map(role => `<option value="${escapeHtml(role.name)}">${escapeHtml(role.name)}</option>`).join('');
     }
     
     /**
@@ -355,7 +387,7 @@
             document.getElementById('account-username').disabled = true;
             document.getElementById('account-email').value = account.email;
             document.getElementById('account-displayname').value = account.displayName || '';
-            document.getElementById('account-role').value = account.roleId || '';
+            document.getElementById('account-role').value = account.role || '';
             document.getElementById('account-password').required = false;
             
             // Set permissions
@@ -424,7 +456,7 @@
         const email = document.getElementById('account-email').value.trim();
         const password = document.getElementById('account-password').value;
         const displayName = document.getElementById('account-displayname').value.trim();
-        const roleId = document.getElementById('account-role').value;
+        const role = document.getElementById('account-role').value;
         
         const permissions = Array.from(document.querySelectorAll('#account-permissions input[type="checkbox"]:checked'))
             .map(cb => cb.value);
@@ -433,7 +465,7 @@
             username,
             email,
             displayName,
-            roleId: roleId || null,
+            role: role || null,
             permissions
         };
         
@@ -772,13 +804,4 @@
             button.classList.remove('loading');
         }
     }
-    
-    // Export public functions
-    window.accountsModule = {
-        editAccount,
-        editRole,
-        deleteAccount,
-        deleteRole,
-        toggleEmail
-    };
 })();
