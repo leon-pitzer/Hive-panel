@@ -136,12 +136,8 @@ function decrypt(encryptedData) {
  * @returns {boolean} True if encryption is configured
  */
 function isEncryptionConfigured() {
-    try {
-        const key = process.env.ENCRYPTION_KEY;
-        return key && key.length >= 32;
-    } catch {
-        return false;
-    }
+    const key = process.env.ENCRYPTION_KEY;
+    return key && key.length >= 32;
 }
 
 module.exports = {
