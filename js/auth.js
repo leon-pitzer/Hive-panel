@@ -8,6 +8,7 @@ const Auth = (function() {
     
     const SESSION_CHECK_INTERVAL = 60 * 1000; // Check every minute
     let sessionCheckTimer = null;
+    let currentAuthUser = null;
     
     /**
      * Checks authentication status with server
@@ -21,13 +22,27 @@ const Auth = (function() {
             });
             
             if (!response.ok) {
+                currentAuthUser = null;
                 return { authenticated: false };
             }
             
             const data = await response.json();
+            
+            // Update current user and permissions
+            if (data.authenticated && data.user) {
+                currentAuthUser = data.user;
+                // Update Permissions module if available
+                if (typeof Permissions !== 'undefined') {
+                    Permissions.setCurrentUser(data.user);
+                }
+            } else {
+                currentAuthUser = null;
+            }
+            
             return data;
         } catch (error) {
             console.error('Error checking auth status:', error);
+            currentAuthUser = null;
             return { authenticated: false };
         }
     }
@@ -112,8 +127,19 @@ const Auth = (function() {
      * @returns {Promise<Object|null>} User object or null
      */
     async function getCurrentUser() {
+        if (currentAuthUser) {
+            return currentAuthUser;
+        }
         const status = await checkAuthStatus();
         return status.authenticated ? status.user : null;
+    }
+    
+    /**
+     * Gets the cached current user (synchronous)
+     * @returns {Object|null} User object or null
+     */
+    function getCachedUser() {
+        return currentAuthUser;
     }
     
     // Public API
@@ -123,7 +149,8 @@ const Auth = (function() {
         logout,
         startSessionValidation,
         stopSessionValidation,
-        getCurrentUser
+        getCurrentUser,
+        getCachedUser
     };
 })();
 

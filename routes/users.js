@@ -59,8 +59,11 @@ async function ensureDefaultAdmin() {
         // Read existing users
         const users = await readJsonFile(USERS_FILE, []);
         
-        // Check if any admin exists
-        const hasAdmin = users.some(user => user.role === 'admin');
+        // Check if any admin exists with wildcard permission
+        const hasAdmin = users.some(user => 
+            user.role === 'admin' || 
+            (user.permissions && user.permissions.includes('*'))
+        );
         
         if (!hasAdmin) {
             logger.info('No admin user found. Creating default admin...');
@@ -72,11 +75,13 @@ async function ensureDefaultAdmin() {
             const salt = await bcrypt.genSalt(10);
             const passwordHash = await bcrypt.hash(password, salt);
             
-            // Create admin user
+            // Create admin user with wildcard permission
             const adminUser = {
                 username: 'admin',
                 passwordHash: passwordHash,
                 role: 'admin',
+                permissions: ['*'], // Wildcard permission for first admin
+                roles: [], // No roles needed with wildcard
                 createdAt: new Date().toISOString(),
                 mustChangePassword: true
             };
@@ -93,6 +98,7 @@ async function ensureDefaultAdmin() {
                 console.log('[OK] Standard-Admin-Benutzer erstellt:');
                 console.log('   Benutzername: admin');
                 console.log('   Passwort: ' + password);
+                console.log('   Permissions: * (Wildcard - Voller Zugriff)');
                 console.log('');
                 console.log('   [!] WICHTIG: Ändern Sie das Passwort nach der ersten Anmeldung!');
                 console.log('='.repeat(70) + '\n');
@@ -164,9 +170,11 @@ async function verifyUserPassword(username, password) {
  * @param {string} username - Username
  * @param {string} password - Password
  * @param {string} role - User role (default: 'user')
+ * @param {string[]} permissions - Direct permissions (default: [])
+ * @param {string[]} roles - Role IDs (default: [])
  * @returns {Promise<boolean>} Success status
  */
-async function createUser(username, password, role = 'user') {
+async function createUser(username, password, role = 'user', permissions = [], roles = []) {
     try {
         // Validate input
         if (!username || !password) {
@@ -193,6 +201,8 @@ async function createUser(username, password, role = 'user') {
             username: username,
             passwordHash: passwordHash,
             role: role,
+            permissions: permissions || [],
+            roles: roles || [],
             createdAt: new Date().toISOString()
         };
         
@@ -203,7 +213,7 @@ async function createUser(username, password, role = 'user') {
         const success = await writeJsonFile(USERS_FILE, users);
         
         if (success) {
-            logger.info('User created successfully:', { username, role });
+            logger.info('User created successfully:', { username, role, permissions, roles });
             return true;
         }
         

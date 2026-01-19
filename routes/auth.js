@@ -112,7 +112,9 @@ router.post('/login',
                     message: 'Login erfolgreich',
                     user: {
                         username: user.username,
-                        role: user.role
+                        role: user.role,
+                        permissions: user.permissions || [],
+                        roles: user.roles || []
                     }
                 });
             } else {
@@ -184,7 +186,9 @@ router.get('/status', (req, res) => {
             user: {
                 userId: req.session.userId,
                 username: req.session.username,
-                role: req.session.role
+                role: req.session.role,
+                permissions: req.session.permissions || [],
+                roles: req.session.roles || []
             }
         });
     } else {
