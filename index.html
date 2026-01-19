@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive Panel - Login</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <script src="lib/bcrypt.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <h1>🐝 Hive Panel</h1>
+            </div>
+            
+            <h2>Anmelden</h2>
+            
+            <div id="error-message" class="error-message hidden"></div>
+            <div id="info-message" class="info-message hidden"></div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Benutzername</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        required 
+                        autocomplete="username"
+                        placeholder="Benutzername eingeben"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Passwort</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        required 
+                        autocomplete="current-password"
+                        placeholder="Passwort eingeben"
+                    >
+                </div>
+                
+                <div class="form-group recaptcha-container">
+                    <!-- WICHTIG: Ersetzen Sie diesen Test-Schlüssel durch Ihren eigenen reCAPTCHA Site Key -->
+                    <!-- Der aktuelle Schlüssel ist ein Google Test-Key und bietet KEINEN echten Bot-Schutz -->
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+                    <small class="recaptcha-note">
+                        Hinweis: Dies ist ein Test-reCAPTCHA-Schlüssel. Bitte ersetzen Sie ihn durch Ihren eigenen Schlüssel.
+                    </small>
+                </div>
+                
+                <button type="submit" id="login-button" class="btn btn-primary">
+                    <span class="button-text">Anmelden</span>
+                    <span class="spinner hidden"></span>
+                </button>
+            </form>
+            
+            <div class="login-info">
+                <p>Erste Anmeldung? Ein Admin-Benutzer wird automatisch erstellt.</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/auth.js"></script>
+    <script src="js/users.js"></script>
+    <script src="js/ratelimit.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

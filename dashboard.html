@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive Panel - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>🐝 Hive Panel</h1>
+                </div>
+                <div class="user-section">
+                    <span class="welcome-message">Willkommen, <strong id="username-display"></strong>!</span>
+                    <button id="logout-button" class="btn btn-secondary">Abmelden</button>
+                </div>
+            </div>
+        </header>
+        
+        <main class="dashboard-main">
+            <div class="dashboard-content">
+                <div class="dashboard-card">
+                    <h2>Dashboard</h2>
+                    <p>Sie sind erfolgreich angemeldet.</p>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-icon">👤</div>
+                            <div class="info-details">
+                                <h3>Benutzer</h3>
+                                <p id="user-role">Rolle wird geladen...</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">🔒</div>
+                            <div class="info-details">
+                                <h3>Sicherheit</h3>
+                                <p>Aktive Session</p>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item">
+                            <div class="info-icon">⏰</div>
+                            <div class="info-details">
+                                <h3>Login-Zeit</h3>
+                                <p id="login-time">Wird geladen...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <h3>Weitere Funktionen</h3>
+                    <p>Hier können zukünftig weitere Dashboard-Funktionen implementiert werden:</p>
+                    <ul>
+                        <li>Benutzerverwaltung</li>
+                        <li>Systemeinstellungen</li>
+                        <li>Protokolle und Berichte</li>
+                        <li>Sicherheitseinstellungen</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+        
+        <footer class="dashboard-footer">
+            <p>&copy; 2024 Hive Panel. Alle Rechte vorbehalten.</p>
+        </footer>
+    </div>
+    
+    <script src="lib/bcrypt.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/users.js"></script>
+    <script>
+        // Session-Check beim Laden
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!Auth.isAuthenticated()) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const session = Auth.getSession();
+            const usernameDisplay = document.getElementById('username-display');
+            const userRole = document.getElementById('user-role');
+            const loginTime = document.getElementById('login-time');
+            
+            if (usernameDisplay) {
+                usernameDisplay.textContent = session.username;
+            }
+            
+            if (userRole) {
+                userRole.textContent = `Rolle: ${session.role || 'Benutzer'}`;
+            }
+            
+            if (loginTime) {
+                const loginDate = new Date(session.loginTime);
+                loginTime.textContent = loginDate.toLocaleString('de-DE');
+            }
+            
+            // Logout-Funktionalität
+            const logoutButton = document.getElementById('logout-button');
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function() {
+                    Auth.logout();
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html>
