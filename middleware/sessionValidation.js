@@ -5,7 +5,7 @@
 
 const config = require('../html/utils/config');
 const { logger, securityLogger } = require('../html/utils/logger');
-const { getAllUserPermissions } = require('../html/utils/permissions');
+const { getAllUserPermissions, isSuperAdmin, isUserAdmin, PERMISSIONS } = require('../html/utils/permissions');
 
 // Server restart token - generated on server start
 const RESTART_TOKEN = generateRestartToken();
@@ -101,27 +101,36 @@ function sessionValidation(req, res, next) {
  * @param {Object} user - User object
  */
 async function initializeSession(session, user) {
-    // Get all effective permissions (direct + from roles)
-    const effectivePermissions = await getAllUserPermissions(user);
-    
     session.userId = user.id || user.username;
     session.username = user.username;
     session.role = user.role;
-    // Store effective permissions (includes wildcard from roles if present)
+    
+    // Get effective permissions
+    let effectivePermissions = [];
+    
+    if (isSuperAdmin(user)) {
+        // Superadmin gets all permissions
+        effectivePermissions = Object.values(PERMISSIONS);
+    } else if (isUserAdmin(user)) {
+        // Admin gets all permissions
+        effectivePermissions = Object.values(PERMISSIONS);
+    } else {
+        // Regular user gets their assigned permissions
+        effectivePermissions = await getAllUserPermissions(user);
+    }
+    
     session.permissions = effectivePermissions;
     session.roles = user.roles || [];
     session.loginTime = Date.now();
     session.lastActivity = Date.now();
     session.restartToken = RESTART_TOKEN;
     
-    // Log wildcard permissions for debugging
-    if (effectivePermissions.includes('*')) {
-        logger.info('Session initialized with wildcard permission', {
-            username: user.username,
-            directPermissions: user.permissions || [],
-            effectivePermissions: effectivePermissions
-        });
-    }
+    // Log effective permissions for debugging
+    logger.info('Session initialized', {
+        username: user.username,
+        role: user.role,
+        effectivePermissions: effectivePermissions
+    });
 }
 
 /**

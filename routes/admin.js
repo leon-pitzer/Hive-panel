@@ -21,9 +21,9 @@ const REQUESTS_FILE = path.join(__dirname, '../data/registration-requests.json')
 
 /**
  * GET /api/admin/accounts
- * List all accounts (requires: accounts.manage or accounts.view or *)
+ * List all accounts (requires: manage_accounts or view_accounts)
  */
-router.get('/accounts', requirePermission(['accounts.manage', 'accounts.view']), async (req, res) => {
+router.get('/accounts', requirePermission(['manage_accounts', 'view_accounts']), async (req, res) => {
     try {
         // TODO: Replace with MySQL query in future
         // SELECT username, email, role, permissions, roles, createdAt FROM users ORDER BY createdAt DESC
@@ -54,9 +54,9 @@ router.get('/accounts', requirePermission(['accounts.manage', 'accounts.view']),
 
 /**
  * GET /api/admin/accounts/:username
- * Get single account with details (requires: accounts.manage or accounts.view or *)
+ * Get single account with details (requires: manage_accounts or view_accounts)
  */
-router.get('/accounts/:username', requirePermission(['accounts.manage', 'accounts.view']), async (req, res) => {
+router.get('/accounts/:username', requirePermission(['manage_accounts', 'view_accounts']), async (req, res) => {
     try {
         const { username } = req.params;
         
@@ -93,10 +93,10 @@ router.get('/accounts/:username', requirePermission(['accounts.manage', 'account
 
 /**
  * POST /api/admin/accounts
- * Create new account (requires: accounts.manage or *)
+ * Create new account (requires: manage_accounts)
  */
 router.post('/accounts',
-    requirePermission('accounts.manage'),
+    requirePermission('manage_accounts'),
     [
         body('username').trim().notEmpty().matches(/^[a-zA-Z0-9_-]+$/).isLength({ min: 3, max: 30 }),
         body('email').optional().isEmail(),
@@ -197,10 +197,10 @@ router.post('/accounts',
 
 /**
  * PUT /api/admin/accounts/:username
- * Update account (requires: accounts.manage or *)
+ * Update account (requires: manage_accounts)
  */
 router.put('/accounts/:username',
-    requirePermission('accounts.manage'),
+    requirePermission('manage_accounts'),
     [
         body('email').optional().isEmail(),
         body('newPassword').optional().isLength({ min: 8 }),
@@ -295,9 +295,9 @@ router.put('/accounts/:username',
 
 /**
  * DELETE /api/admin/accounts/:username
- * Delete account (requires: accounts.manage or *)
+ * Delete account (requires: manage_accounts)
  */
-router.delete('/accounts/:username', requirePermission('accounts.manage'), async (req, res) => {
+router.delete('/accounts/:username', requirePermission('manage_accounts'), async (req, res) => {
     try {
         const { username } = req.params;
         
@@ -360,9 +360,9 @@ router.delete('/accounts/:username', requirePermission('accounts.manage'), async
 
 /**
  * GET /api/admin/roles
- * Get all roles (requires: roles.manage or *)
+ * Get all roles (requires: manage_roles)
  */
-router.get('/roles', requirePermission('roles.manage'), async (req, res) => {
+router.get('/roles', requirePermission('manage_roles'), async (req, res) => {
     try {
         // TODO: Replace with MySQL query in future
         // SELECT * FROM roles ORDER BY name
@@ -383,10 +383,10 @@ router.get('/roles', requirePermission('roles.manage'), async (req, res) => {
 
 /**
  * POST /api/admin/roles
- * Create new role (requires: roles.manage or *)
+ * Create new role (requires: manage_roles)
  */
 router.post('/roles',
-    requirePermission('roles.manage'),
+    requirePermission('manage_roles'),
     [
         body('name').trim().notEmpty().isLength({ min: 3, max: 50 }),
         body('permissions').isArray()
@@ -454,10 +454,10 @@ router.post('/roles',
 
 /**
  * PUT /api/admin/roles/:id
- * Update role (requires: roles.manage or *)
+ * Update role (requires: manage_roles)
  */
 router.put('/roles/:id',
-    requirePermission('roles.manage'),
+    requirePermission('manage_roles'),
     [
         body('name').optional().trim().isLength({ min: 3, max: 50 }),
         body('permissions').optional().isArray()
@@ -515,9 +515,9 @@ router.put('/roles/:id',
 
 /**
  * DELETE /api/admin/roles/:id
- * Delete role (requires: roles.manage or *)
+ * Delete role (requires: manage_roles)
  */
-router.delete('/roles/:id', requirePermission('roles.manage'), async (req, res) => {
+router.delete('/roles/:id', requirePermission('manage_roles'), async (req, res) => {
     try {
         const { id } = req.params;
         
@@ -562,9 +562,9 @@ router.delete('/roles/:id', requirePermission('roles.manage'), async (req, res) 
 
 /**
  * GET /api/admin/registration-requests
- * List all registration requests (requires: accounts.requests or accounts.manage or *)
+ * List all registration requests (requires: handle_requests or manage_accounts)
  */
-router.get('/registration-requests', requirePermission(['accounts.requests', 'accounts.manage']), async (req, res) => {
+router.get('/registration-requests', requirePermission(['handle_requests', 'manage_accounts']), async (req, res) => {
     try {
         // TODO: Replace with MySQL query in future
         // SELECT * FROM registration_requests ORDER BY createdAt DESC
@@ -591,9 +591,9 @@ router.get('/registration-requests', requirePermission(['accounts.requests', 'ac
 
 /**
  * GET /api/admin/registration-requests/count
- * Get count of pending registration requests (requires: accounts.requests or accounts.manage or *)
+ * Get count of pending registration requests (requires: handle_requests or manage_accounts)
  */
-router.get('/registration-requests/count', requirePermission(['accounts.requests', 'accounts.manage']), async (req, res) => {
+router.get('/registration-requests/count', requirePermission(['handle_requests', 'manage_accounts']), async (req, res) => {
     try {
         // TODO: Replace with MySQL query in future
         // SELECT COUNT(*) FROM registration_requests WHERE status = 'pending'
@@ -615,9 +615,9 @@ router.get('/registration-requests/count', requirePermission(['accounts.requests
 
 /**
  * POST /api/admin/registration-requests/:id/approve
- * Approve a registration request (requires: accounts.requests or accounts.manage or *)
+ * Approve a registration request (requires: handle_requests or manage_accounts)
  */
-router.post('/registration-requests/:id/approve', requirePermission(['accounts.requests', 'accounts.manage']), async (req, res) => {
+router.post('/registration-requests/:id/approve', requirePermission(['handle_requests', 'manage_accounts']), async (req, res) => {
     try {
         const { id } = req.params;
         
@@ -702,10 +702,10 @@ router.post('/registration-requests/:id/approve', requirePermission(['accounts.r
 
 /**
  * POST /api/admin/registration-requests/:id/reject
- * Reject a registration request (requires: accounts.requests or accounts.manage or *)
+ * Reject a registration request (requires: handle_requests or manage_accounts)
  */
 router.post('/registration-requests/:id/reject',
-    requirePermission(['accounts.requests', 'accounts.manage']),
+    requirePermission(['handle_requests', 'manage_accounts']),
     [
         body('reason').optional().trim().isLength({ max: 500 })
     ],

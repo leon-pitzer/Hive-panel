@@ -25,20 +25,27 @@ const Permissions = (function() {
     }
     
     /**
-     * Checks if user has wildcard permission
-     * The wildcard permission (*) grants access to ALL features in the system
-     * @returns {boolean} True if user has wildcard
+     * Checks if user has wildcard permission OR is superadmin
+     * @returns {boolean} True if user has wildcard or is superadmin
      */
     function hasWildcard() {
-        if (!currentUser || !currentUser.permissions) {
-            return false;
-        }
-        return currentUser.permissions.includes('*');
+        if (!currentUser) return false;
+        
+        // Check if superadmin
+        if (currentUser.role === 'superadmin') return true;
+        
+        // Check if has admin_all
+        if (currentUser.permissions && currentUser.permissions.includes('admin_all')) return true;
+        
+        // Check wildcard (legacy)
+        if (currentUser.permissions && currentUser.permissions.includes('*')) return true;
+        
+        return false;
     }
     
     /**
      * Checks if user has a specific permission
-     * NOTE: Wildcard permission (*) always returns true, granting access to everything
+     * NOTE: Wildcard permission (*), admin_all, and superadmin role always return true
      * @param {string} permission - Permission to check
      * @returns {boolean} True if user has permission
      */
@@ -47,7 +54,7 @@ const Permissions = (function() {
             return false;
         }
         
-        // Wildcard grants everything - checked first for performance
+        // Superadmin and admin_all have everything
         if (hasWildcard()) {
             return true;
         }

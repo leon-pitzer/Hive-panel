@@ -15,11 +15,11 @@
     
     // Available permissions
     const AVAILABLE_PERMISSIONS = [
-        'accounts.manage',
-        'accounts.view',
-        'accounts.requests',
-        'roles.manage',
-        '*'
+        'manage_accounts',
+        'view_accounts',
+        'handle_requests',
+        'manage_roles',
+        'admin_all'
     ];
     
     // Initialize on DOM load
@@ -56,8 +56,8 @@
             return false;
         }
         
-        // Check for wildcard OR accounts.manage OR accounts.view
-        return Permissions.hasAnyPermission(['accounts.manage', 'accounts.view', '*']);
+        // Check for wildcard OR manage_accounts OR view_accounts
+        return Permissions.hasAnyPermission(['manage_accounts', 'view_accounts', 'admin_all', '*']);
     }
     
     /**
