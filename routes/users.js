@@ -81,7 +81,7 @@ async function ensureDefaultAdmin() {
                 username: 'admin',
                 passwordHash: passwordHash,
                 role: 'superadmin',  // IMPORTANT: superadmin role
-                permissions: ['admin_all'],  // For compatibility
+                permissions: ['admin_all'],  // For compatibility with legacy permission checking logic
                 roles: [], // No roles needed for superadmin
                 createdAt: new Date().toISOString(),
                 mustChangePassword: true

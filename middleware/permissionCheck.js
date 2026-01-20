@@ -30,7 +30,7 @@ function requirePermission(requiredPermissions) {
             }
 
             // Force disable permissions if configured
-            if (config.forceDisablePermissions === true) {
+            if (config.forceDisablePermissions) {
                 securityLogger.warn('Permissions system DISABLED via FORCE_DISABLE_PERMISSIONS');
                 return next();
             }
