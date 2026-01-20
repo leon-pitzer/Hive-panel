@@ -30,7 +30,20 @@ function createPool() {
         idleTimeout: 60000,
         queueLimit: 0,
         enableKeepAlive: true,
-        keepAliveInitialDelay: 0
+        keepAliveInitialDelay: 0,
+        
+        // Timeout settings for remote connections
+        connectTimeout: 30000,        // 30 seconds for connection establishment (default: 10000)
+        
+        // MariaDB compatibility
+        charset: 'utf8mb4',
+        timezone: process.env.DB_TIMEZONE || 'local',  // Use UTC for consistency across environments
+        
+        // SSL optional configuration
+        // WARNING: When enabled with DB_SSL=true, this uses rejectUnauthorized=false which
+        // disables certificate validation. Only use for private/trusted networks.
+        // For production, configure proper SSL certificates instead.
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
     };
 
     pool = mysql.createPool(config);
@@ -39,7 +52,9 @@ function createPool() {
         host: config.host,
         port: config.port,
         database: config.database,
-        connectionLimit: config.connectionLimit
+        connectionLimit: config.connectionLimit,
+        connectTimeout: config.connectTimeout,
+        ssl: config.ssl !== false
     });
 
     return pool;
