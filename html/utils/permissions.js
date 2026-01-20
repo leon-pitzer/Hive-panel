@@ -181,14 +181,11 @@ async function hasAnyPermission(user, permissions) {
         return true;
     }
 
-    // Check each permission
-    for (const permission of permissions) {
-        if (await hasPermission(user, permission)) {
-            return true;
-        }
-    }
+    // Get all user permissions once
+    const allPermissions = await getAllUserPermissions(user);
 
-    return false;
+    // Check if any required permission exists
+    return permissions.some(p => allPermissions.includes(p));
 }
 
 /**
@@ -217,14 +214,11 @@ async function hasAllPermissions(user, permissions) {
         return true;
     }
 
-    // Check each permission
-    for (const permission of permissions) {
-        if (!(await hasPermission(user, permission))) {
-            return false;
-        }
-    }
+    // Get all user permissions once
+    const allPermissions = await getAllUserPermissions(user);
 
-    return true;
+    // Check if all required permissions exist
+    return permissions.every(p => allPermissions.includes(p));
 }
 
 /**
