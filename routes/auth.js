@@ -157,13 +157,14 @@ router.post('/login',
                 // Successful login
                 loginAttempts.resetAttempts(username);
                 
-                // Initialize session
-                initializeSession(req.session, user);
+                // Initialize session with effective permissions
+                await initializeSession(req.session, user);
 
                 securityLogger.info('Successful login', {
                     username,
                     ip: clientIp,
-                    role: user.role
+                    role: user.role,
+                    permissions: req.session.permissions // Log effective permissions
                 });
 
                 res.json({
@@ -172,7 +173,8 @@ router.post('/login',
                     user: {
                         username: user.username,
                         role: user.role,
-                        permissions: user.permissions || [],
+                        // Send effective permissions (includes wildcard from roles)
+                        permissions: req.session.permissions || [],
                         roles: user.roles || []
                     }
                 });

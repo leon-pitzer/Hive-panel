@@ -48,8 +48,13 @@ function requirePermission(requiredPermissions) {
             }
 
             // Check if user has wildcard permission
+            // Wildcard (*) grants access to everything
             if (hasWildcard(user)) {
-                // Wildcard grants access to everything
+                securityLogger.info('Access granted via wildcard permission', {
+                    username: req.session.username,
+                    path: req.path,
+                    requiredPermissions: permissions
+                });
                 return next();
             }
 

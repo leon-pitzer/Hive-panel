@@ -26,6 +26,7 @@ const Permissions = (function() {
     
     /**
      * Checks if user has wildcard permission
+     * The wildcard permission (*) grants access to ALL features in the system
      * @returns {boolean} True if user has wildcard
      */
     function hasWildcard() {
@@ -37,6 +38,7 @@ const Permissions = (function() {
     
     /**
      * Checks if user has a specific permission
+     * NOTE: Wildcard permission (*) always returns true, granting access to everything
      * @param {string} permission - Permission to check
      * @returns {boolean} True if user has permission
      */
@@ -45,7 +47,7 @@ const Permissions = (function() {
             return false;
         }
         
-        // Wildcard grants everything
+        // Wildcard grants everything - checked first for performance
         if (hasWildcard()) {
             return true;
         }
@@ -55,8 +57,8 @@ const Permissions = (function() {
             return true;
         }
         
-        // Note: Role-based permissions need to be resolved on the server
-        // The client only receives the effective permissions list
+        // Note: Role-based permissions are resolved on the server
+        // The client receives the effective permissions list (including wildcard from roles)
         return false;
     }
     
