@@ -13,13 +13,17 @@
     let currentEditRole = null;
     let deleteCallback = null;
     
-    // Available permissions
+    // Available permissions (supporting both old and new naming conventions)
     const AVAILABLE_PERMISSIONS = [
         'manage_accounts',
         'view_accounts',
         'handle_requests',
         'manage_roles',
-        'admin_all'
+        'admin_all',
+        'accounts.manage',      // New naming: equivalent to manage_accounts
+        'accounts.view',        // New naming: equivalent to view_accounts
+        'accounts.requests',    // New naming: equivalent to handle_requests
+        'roles.manage'          // New naming: equivalent to manage_roles
     ];
     
     // Initialize on DOM load
@@ -56,8 +60,11 @@
             return false;
         }
         
-        // Check for wildcard OR manage_accounts OR view_accounts
-        return Permissions.hasAnyPermission(['manage_accounts', 'view_accounts', 'admin_all', '*']);
+        // Check for wildcard OR manage_accounts OR view_accounts (both old and new naming)
+        return Permissions.hasAnyPermission([
+            'manage_accounts', 'view_accounts', 'admin_all', '*',
+            'accounts.manage', 'accounts.view'  // New permission naming
+        ]);
     }
     
     /**
