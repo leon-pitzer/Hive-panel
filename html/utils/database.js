@@ -33,9 +33,7 @@ function createPool() {
         keepAliveInitialDelay: 0,
         
         // Timeout settings for remote connections
-        connectTimeout: 30000,        // 30 seconds for connection establishment
-        acquireTimeout: 30000,        // 30 seconds for pool acquisition  
-        timeout: 60000,               // 60 seconds for queries
+        connectTimeout: 30000,        // 30 seconds for connection establishment (default: 10000)
         
         // MariaDB compatibility
         charset: 'utf8mb4',
@@ -53,8 +51,6 @@ function createPool() {
         database: config.database,
         connectionLimit: config.connectionLimit,
         connectTimeout: config.connectTimeout,
-        acquireTimeout: config.acquireTimeout,
-        timeout: config.timeout,
         ssl: config.ssl !== false
     });
 
