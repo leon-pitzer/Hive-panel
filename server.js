@@ -186,7 +186,7 @@ app.get('/account.html', (req, res) => {
 });
 
 // Protected route for account management (admin only)
-app.get('/html/admin/accounts.html', requirePermission(['accounts.manage', 'accounts.view']), (req, res) => {
+app.get('/html/admin/accounts.html', requirePermission(['manage_accounts', 'view_accounts']), (req, res) => {
     res.sendFile(path.join(__dirname, 'html/admin/accounts.html'));
 });
 
