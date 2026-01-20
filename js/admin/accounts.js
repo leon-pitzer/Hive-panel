@@ -56,7 +56,8 @@
             return false;
         }
         
-        return Permissions.hasAnyPermission(['accounts.manage', '*']);
+        // Check for wildcard OR accounts.manage OR accounts.view
+        return Permissions.hasAnyPermission(['accounts.manage', 'accounts.view', '*']);
     }
     
     /**

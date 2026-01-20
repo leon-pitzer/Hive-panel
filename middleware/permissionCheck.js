@@ -6,6 +6,7 @@
 const { hasPermission, hasWildcard } = require('../html/utils/permissions');
 const { getUserByUsername } = require('../routes/users');
 const { logger, securityLogger } = require('../html/utils/logger');
+const config = require('../html/utils/config');
 
 /**
  * Middleware factory for permission checking
@@ -30,6 +31,15 @@ function requirePermission(requiredPermissions) {
                     success: false,
                     error: 'Nicht authentifiziert. Bitte melden Sie sich an.'
                 });
+            }
+
+            // Force disable permissions if configured
+            if (config.forceDisablePermissions) {
+                securityLogger.warn('Permissions system DISABLED via FORCE_DISABLE_PERMISSIONS', {
+                    username: req.session.username,
+                    path: req.path
+                });
+                return next();
             }
 
             // Get user data with permissions

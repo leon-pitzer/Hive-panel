@@ -75,12 +75,18 @@ async function ensureDefaultAdmin() {
             const salt = await bcrypt.genSalt(10);
             const passwordHash = await bcrypt.hash(password, salt);
             
-            // Create admin user with wildcard permission
+            // Create admin user with wildcard permission and explicit permissions
             const adminUser = {
                 username: 'admin',
                 passwordHash: passwordHash,
                 role: 'admin',
-                permissions: ['*'], // Wildcard permission for first admin
+                permissions: [
+                    '*',
+                    'accounts.manage',
+                    'accounts.view',
+                    'accounts.requests',
+                    'roles.manage'
+                ], // Wildcard permission plus all explicit permissions
                 roles: [], // No roles needed with wildcard
                 createdAt: new Date().toISOString(),
                 mustChangePassword: true

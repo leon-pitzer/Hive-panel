@@ -24,6 +24,7 @@ const { startPeriodicCleanup } = require('./html/utils/registrationCleanup');
 
 // Import middleware
 const { sessionValidation } = require('./middleware/sessionValidation');
+const { requirePermission } = require('./middleware/permissionCheck');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -182,6 +183,11 @@ app.get('/account.html', (req, res) => {
         return res.redirect('/');
     }
     res.sendFile(path.join(__dirname, 'html/account.html'));
+});
+
+// Protected route for account management (admin only)
+app.get('/html/admin/accounts.html', requirePermission(['accounts.manage', 'accounts.view']), (req, res) => {
+    res.sendFile(path.join(__dirname, 'html/admin/accounts.html'));
 });
 
 // 404 handler

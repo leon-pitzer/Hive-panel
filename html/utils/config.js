@@ -61,6 +61,9 @@ module.exports = {
         specialChars: '!@#$%^&*()_+-=[]{}|;:,.<>?'
     },
 
+    // Force disable permissions system (for debugging only)
+    forceDisablePermissions: process.env.FORCE_DISABLE_PERMISSIONS === 'true',
+
     // CSRF configuration
     csrf: {
         cookie: {
