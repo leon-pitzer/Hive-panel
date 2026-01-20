@@ -37,9 +37,12 @@ function createPool() {
         
         // MariaDB compatibility
         charset: 'utf8mb4',
-        timezone: 'local',
+        timezone: process.env.DB_TIMEZONE || 'local',  // Use UTC for consistency across environments
         
-        // SSL optional configuration (for local/private servers often not required)
+        // SSL optional configuration
+        // WARNING: When enabled with DB_SSL=true, this uses rejectUnauthorized=false which
+        // disables certificate validation. Only use for private/trusted networks.
+        // For production, configure proper SSL certificates instead.
         ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
     };
 
