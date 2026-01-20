@@ -1091,18 +1091,18 @@ input:focus {
 .account-settings-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     max-height: calc(100vh - 240px); /* Account for header and footer */
     overflow-y: auto;
 }
 
 .account-settings-grid .dashboard-card {
-    padding: var(--spacing-lg);
+    padding: var(--spacing-md);
     height: fit-content;
 }
 
 .account-settings-grid .form-group {
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
 }
 
 .account-settings-grid .form-group:last-of-type {
@@ -1110,8 +1110,8 @@ input:focus {
 }
 
 .account-settings-grid .form-group input {
-    padding: 0.625rem 0.875rem;
-    font-size: 0.9375rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
 }
 
 .account-settings-grid .full-width {
@@ -1119,8 +1119,8 @@ input:focus {
 }
 
 .account-settings-grid h3 {
-    font-size: 1.125rem;
-    margin-bottom: var(--spacing-md);
+    font-size: 1rem;
+    margin-bottom: var(--spacing-sm);
 }
 
 @media (max-width: 768px) {
