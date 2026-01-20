@@ -248,7 +248,7 @@
         tbody.innerHTML = accounts.map(account => {
             const censoredEmail = censorEmail(account.email);
             const permissionBadges = (account.permissions || []).map(perm => 
-                `<span class="badge badge-primary">${perm}</span>`
+                `<span class="badge badge-primary">${escapeHtml(perm)}</span>`
             ).join(' ');
             
             return `
@@ -319,7 +319,7 @@
         
         tbody.innerHTML = roles.map(role => {
             const permissionBadges = (role.permissions || []).map(perm => 
-                `<span class="badge badge-primary">${perm}</span>`
+                `<span class="badge badge-primary">${escapeHtml(perm)}</span>`
             ).join(' ');
             
             return `
