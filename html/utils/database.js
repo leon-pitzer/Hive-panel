@@ -30,7 +30,19 @@ function createPool() {
         idleTimeout: 60000,
         queueLimit: 0,
         enableKeepAlive: true,
-        keepAliveInitialDelay: 0
+        keepAliveInitialDelay: 0,
+        
+        // Timeout settings for remote connections
+        connectTimeout: 30000,        // 30 seconds for connection establishment
+        acquireTimeout: 30000,        // 30 seconds for pool acquisition  
+        timeout: 60000,               // 60 seconds for queries
+        
+        // MariaDB compatibility
+        charset: 'utf8mb4',
+        timezone: 'local',
+        
+        // SSL optional configuration (for local/private servers often not required)
+        ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false
     };
 
     pool = mysql.createPool(config);
@@ -39,7 +51,11 @@ function createPool() {
         host: config.host,
         port: config.port,
         database: config.database,
-        connectionLimit: config.connectionLimit
+        connectionLimit: config.connectionLimit,
+        connectTimeout: config.connectTimeout,
+        acquireTimeout: config.acquireTimeout,
+        timeout: config.timeout,
+        ssl: config.ssl !== false
     });
 
     return pool;
