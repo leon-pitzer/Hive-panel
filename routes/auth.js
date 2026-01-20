@@ -16,6 +16,7 @@ const loginAttempts = require('../html/utils/loginAttempts');
 const { readJsonFile, updateJsonFile } = require('../html/utils/fileOperations');
 const { logger, securityLogger } = require('../html/utils/logger');
 const config = require('../html/utils/config');
+const { getPool } = require('../html/utils/database');
 
 const router = express.Router();
 const REQUESTS_FILE = path.join(__dirname, '../data/registration-requests.json');
@@ -101,12 +102,18 @@ router.post('/login',
             }
 
             // Check if user has a pending or rejected registration request
-            // TODO: Replace with MySQL query in future
-            // SELECT * FROM registration_requests WHERE username = ? LIMIT 1
-            const requestsData = await readJsonFile(REQUESTS_FILE, { requests: [] });
-            const registrationRequest = requestsData.requests.find(r => r.username === username);
+            const pool = getPool();
+            const [registrationRequests] = await pool.query(
+                `SELECT status, rejection_reason AS rejectionReason
+                FROM registration_requests
+                WHERE username = ?
+                LIMIT 1`,
+                [username]
+            );
             
-            if (registrationRequest) {
+            if (registrationRequests.length > 0) {
+                const registrationRequest = registrationRequests[0];
+                
                 if (registrationRequest.status === 'pending') {
                     securityLogger.info('Login attempt with pending registration', {
                         username,
@@ -304,14 +311,18 @@ router.post('/register',
             }
             
             // Check if username already has a pending/rejected request
-            // TODO: Replace with MySQL query in future
-            // SELECT * FROM registration_requests WHERE username = ? OR email = ?
-            const requestsData = await readJsonFile(REQUESTS_FILE, { requests: [] });
-            const existingRequest = requestsData.requests.find(
-                r => r.username === username || r.email === email
+            const pool = getPool();
+            const [existingRequests] = await pool.query(
+                `SELECT status
+                FROM registration_requests
+                WHERE username = ? OR email = ?
+                LIMIT 1`,
+                [username, email]
             );
             
-            if (existingRequest) {
+            if (existingRequests.length > 0) {
+                const existingRequest = existingRequests[0];
+                
                 if (existingRequest.status === 'pending') {
                     return res.status(409).json({
                         success: false,
@@ -331,42 +342,25 @@ router.post('/register',
             
             // Generate unique request ID
             const requestId = `req-${crypto.randomBytes(12).toString('hex')}`;
-            
-            // Create registration request
-            const newRequest = {
-                id: requestId,
-                username: username.trim(),
-                email: email.trim(),
-                passwordHash: passwordHash,
-                status: 'pending',
-                createdAt: new Date().toISOString(),
-                ip: clientIp,
-                rejectionReason: null
-            };
-            
-            // Add to requests file
-            const success = await updateJsonFile(REQUESTS_FILE, (data) => {
-                if (!data.requests) {
-                    data.requests = [];
-                }
-                data.requests.push(newRequest);
-                return data;
-            }, { requests: [] });
-            
-            if (success) {
-                securityLogger.info('New registration request created', {
-                    requestId,
-                    username,
-                    ip: clientIp
-                });
-                
-                res.json({
-                    success: true,
-                    message: 'Registrierungsanfrage erfolgreich eingereicht. Sie erhalten eine Benachrichtigung, sobald Ihr Account genehmigt wurde.'
-                });
-            } else {
-                throw new Error('Failed to save registration request');
-            }
+
+            // Insert registration request into database
+            await pool.query(
+                `INSERT INTO registration_requests 
+                (id, username, email, password_hash, status, ip)
+                VALUES (?, ?, ?, ?, 'pending', ?)`,
+                [requestId, username.trim(), email.trim(), passwordHash, clientIp]
+            );
+
+            securityLogger.info('New registration request created', {
+                requestId,
+                username,
+                ip: clientIp
+            });
+
+            res.json({
+                success: true,
+                message: 'Registrierungsanfrage erfolgreich eingereicht. Sie erhalten eine Benachrichtigung, sobald Ihr Account genehmigt wurde.'
+            });
             
         } catch (error) {
             logger.error('Registration error:', { error: error.message });

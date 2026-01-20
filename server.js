@@ -21,6 +21,7 @@ const { validateEnv, getEnvInfo } = require('./html/utils/validateEnv');
 const config = require('./html/utils/config');
 const { getRecaptchaConfig } = require('./html/utils/recaptcha');
 const { startPeriodicCleanup } = require('./html/utils/registrationCleanup');
+const { initializeDatabase } = require('./html/utils/database');
 
 // Import middleware
 const { sessionValidation } = require('./middleware/sessionValidation');
@@ -223,6 +224,9 @@ let server;
 
 async function startServer() {
     try {
+        // Initialize database connection and create tables
+        await initializeDatabase();
+
         // Ensure default admin exists
         await ensureDefaultAdmin();
 
