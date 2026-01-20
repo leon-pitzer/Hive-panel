@@ -5,6 +5,7 @@
 
 const config = require('../html/utils/config');
 const { logger, securityLogger } = require('../html/utils/logger');
+const { getAllUserPermissions } = require('../html/utils/permissions');
 
 // Server restart token - generated on server start
 const RESTART_TOKEN = generateRestartToken();
@@ -99,15 +100,28 @@ function sessionValidation(req, res, next) {
  * @param {Object} session - Express session object
  * @param {Object} user - User object
  */
-function initializeSession(session, user) {
+async function initializeSession(session, user) {
+    // Get all effective permissions (direct + from roles)
+    const effectivePermissions = await getAllUserPermissions(user);
+    
     session.userId = user.id || user.username;
     session.username = user.username;
     session.role = user.role;
-    session.permissions = user.permissions || [];
+    // Store effective permissions (includes wildcard from roles if present)
+    session.permissions = effectivePermissions;
     session.roles = user.roles || [];
     session.loginTime = Date.now();
     session.lastActivity = Date.now();
     session.restartToken = RESTART_TOKEN;
+    
+    // Log wildcard permissions for debugging
+    if (effectivePermissions.includes('*')) {
+        logger.info('Session initialized with wildcard permission', {
+            username: user.username,
+            directPermissions: user.permissions || [],
+            effectivePermissions: effectivePermissions
+        });
+    }
 }
 
 /**
