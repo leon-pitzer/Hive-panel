@@ -139,9 +139,11 @@ router.post('/accounts',
         body('displayName').optional().trim().isLength({ max: 50 })
     ],
     async (req, res) => {
-        const connection = await getPool().getConnection();
+        let connection;
         
         try {
+            connection = await getPool().getConnection();
+            
             // Validate input
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -247,14 +249,18 @@ router.post('/accounts',
             });
         } catch (error) {
             // Rollback on error
-            await connection.rollback();
+            if (connection) {
+                await connection.rollback();
+            }
             logger.error('Error creating account in database:', { error: error.message });
             res.status(500).json({
                 success: false,
                 error: 'Fehler beim Erstellen des Accounts.'
             });
         } finally {
-            connection.release();
+            if (connection) {
+                connection.release();
+            }
         }
     }
 );
@@ -274,9 +280,11 @@ router.put('/accounts/:username',
         body('displayName').optional().trim().isLength({ max: 50 })
     ],
     async (req, res) => {
-        const connection = await getPool().getConnection();
+        let connection;
         
         try {
+            connection = await getPool().getConnection();
+            
             // Validate input
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -413,7 +421,9 @@ router.put('/accounts/:username',
             });
         } catch (error) {
             // Rollback on error
-            await connection.rollback();
+            if (connection) {
+                await connection.rollback();
+            }
             logger.error('Error updating account in database:', { 
                 error: error.message, 
                 username: req.params.username 
@@ -423,7 +433,9 @@ router.put('/accounts/:username',
                 error: 'Fehler beim Aktualisieren des Accounts.'
             });
         } finally {
-            connection.release();
+            if (connection) {
+                connection.release();
+            }
         }
     }
 );
@@ -433,9 +445,11 @@ router.put('/accounts/:username',
  * Delete account (requires: manage_accounts)
  */
 router.delete('/accounts/:username', requirePermission('manage_accounts'), async (req, res) => {
-    const connection = await getPool().getConnection();
+    let connection;
     
     try {
+        connection = await getPool().getConnection();
+        
         const { username } = req.params;
         
         // Check if user exists
@@ -497,7 +511,9 @@ router.delete('/accounts/:username', requirePermission('manage_accounts'), async
         });
     } catch (error) {
         // Rollback on error
-        await connection.rollback();
+        if (connection) {
+            await connection.rollback();
+        }
         logger.error('Error deleting account from database:', { 
             error: error.message, 
             username: req.params.username 
@@ -507,7 +523,9 @@ router.delete('/accounts/:username', requirePermission('manage_accounts'), async
             error: 'Fehler beim Löschen des Accounts.'
         });
     } finally {
-        connection.release();
+        if (connection) {
+            connection.release();
+        }
     }
 });
 
@@ -564,9 +582,11 @@ router.post('/roles',
         body('description').optional().trim()
     ],
     async (req, res) => {
-        const connection = await getPool().getConnection();
+        let connection;
         
         try {
+            connection = await getPool().getConnection();
+            
             // Validate input
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -632,14 +652,18 @@ router.post('/roles',
             });
         } catch (error) {
             // Rollback on error
-            await connection.rollback();
+            if (connection) {
+                await connection.rollback();
+            }
             logger.error('Error creating role in database:', { error: error.message });
             res.status(500).json({
                 success: false,
                 error: 'Fehler beim Erstellen der Rolle.'
             });
         } finally {
-            connection.release();
+            if (connection) {
+                connection.release();
+            }
         }
     }
 );
@@ -656,9 +680,11 @@ router.put('/roles/:id',
         body('description').optional().trim()
     ],
     async (req, res) => {
-        const connection = await getPool().getConnection();
+        let connection;
         
         try {
+            connection = await getPool().getConnection();
+            
             // Validate input
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
@@ -682,7 +708,9 @@ router.put('/roles/:id',
             );
 
             if (existingRole.length === 0) {
-                await connection.rollback();
+                if (connection) {
+                    await connection.rollback();
+                }
                 return res.status(404).json({
                     success: false,
                     error: 'Rolle nicht gefunden.'
@@ -755,7 +783,9 @@ router.put('/roles/:id',
             });
         } catch (error) {
             // Rollback on error
-            await connection.rollback();
+            if (connection) {
+                await connection.rollback();
+            }
             logger.error('Error updating role in database:', { 
                 error: error.message, 
                 roleId: req.params.id 
@@ -765,7 +795,9 @@ router.put('/roles/:id',
                 error: 'Fehler beim Aktualisieren der Rolle.'
             });
         } finally {
-            connection.release();
+            if (connection) {
+                connection.release();
+            }
         }
     }
 );
@@ -775,9 +807,11 @@ router.put('/roles/:id',
  * Delete role (requires: manage_roles)
  */
 router.delete('/roles/:id', requirePermission('manage_roles'), async (req, res) => {
-    const connection = await getPool().getConnection();
+    let connection;
     
     try {
+        connection = await getPool().getConnection();
+        
         const { id } = req.params;
         const pool = getPool();
         
@@ -806,7 +840,9 @@ router.delete('/roles/:id', requirePermission('manage_roles'), async (req, res) 
         );
 
         if (result.affectedRows === 0) {
-            await connection.rollback();
+            if (connection) {
+                await connection.rollback();
+            }
             return res.status(404).json({
                 success: false,
                 error: 'Rolle nicht gefunden.'
@@ -827,7 +863,9 @@ router.delete('/roles/:id', requirePermission('manage_roles'), async (req, res) 
         });
     } catch (error) {
         // Rollback on error
-        await connection.rollback();
+        if (connection) {
+            await connection.rollback();
+        }
         logger.error('Error deleting role from database:', { 
             error: error.message, 
             roleId: req.params.id 
@@ -837,7 +875,9 @@ router.delete('/roles/:id', requirePermission('manage_roles'), async (req, res) 
             error: 'Fehler beim Löschen der Rolle.'
         });
     } finally {
-        connection.release();
+        if (connection) {
+            connection.release();
+        }
     }
 });
 
@@ -903,9 +943,11 @@ router.get('/registration-requests/count', requirePermission(['handle_requests',
  * Approve a registration request (requires: handle_requests or manage_accounts)
  */
 router.post('/registration-requests/:id/approve', requirePermission(['handle_requests', 'manage_accounts']), async (req, res) => {
-    const connection = await getPool().getConnection();
+    let connection;
     
     try {
+        connection = await getPool().getConnection();
+        
         const { id } = req.params;
         const pool = getPool();
         
@@ -974,7 +1016,9 @@ router.post('/registration-requests/:id/approve', requirePermission(['handle_req
         });
     } catch (error) {
         // Rollback on error
-        await connection.rollback();
+        if (connection) {
+            await connection.rollback();
+        }
         logger.error('Error approving registration request in database:', { 
             error: error.message, 
             requestId: req.params.id 
@@ -984,7 +1028,9 @@ router.post('/registration-requests/:id/approve', requirePermission(['handle_req
             error: 'Fehler beim Genehmigen der Anfrage.'
         });
     } finally {
-        connection.release();
+        if (connection) {
+            connection.release();
+        }
     }
 });
 

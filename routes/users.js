@@ -56,9 +56,11 @@ function generateSecurePassword() {
  * @returns {Promise<Object|null>} Admin info if created, null otherwise
  */
 async function ensureDefaultAdmin() {
-    const connection = await getPool().getConnection();
+    let connection;
     
     try {
+        connection = await getPool().getConnection();
+        
         // Check if any admin exists with superadmin role or admin_all permission
         const [adminRows] = await connection.query(
             `SELECT u.id, u.username, u.role
@@ -130,11 +132,15 @@ async function ensureDefaultAdmin() {
         };
     } catch (error) {
         // Rollback on error
-        await connection.rollback();
+        if (connection) {
+            await connection.rollback();
+        }
         logger.error('Error ensuring default admin exists:', { error: error.message });
         return null;
     } finally {
-        connection.release();
+        if (connection) {
+            connection.release();
+        }
     }
 }
 
@@ -240,9 +246,11 @@ async function verifyUserPassword(username, password) {
  * @returns {Promise<boolean>} Success status
  */
 async function createUser(username, password, role = 'user', permissions = [], roles = [], createdBy = null) {
-    const connection = await getPool().getConnection();
+    let connection;
     
     try {
+        connection = await getPool().getConnection();
+        
         // Validate input
         if (!username || !password) {
             logger.error('Username and password are required');
@@ -260,7 +268,9 @@ async function createUser(username, password, role = 'user', permissions = [], r
         
         if (existing.length > 0) {
             logger.error('User already exists:', { username });
-            await connection.rollback();
+            if (connection) {
+                await connection.rollback();
+            }
             return false;
         }
 
@@ -320,14 +330,18 @@ async function createUser(username, password, role = 'user', permissions = [], r
         return true;
     } catch (error) {
         // Rollback on error
-        await connection.rollback();
+        if (connection) {
+            await connection.rollback();
+        }
         logger.error('Error creating user in database:', { 
             error: error.message,
             username 
         });
         return false;
     } finally {
-        connection.release();
+        if (connection) {
+            connection.release();
+        }
     }
 }
 
