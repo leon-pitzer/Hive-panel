@@ -59,8 +59,9 @@ async function ensureDefaultAdmin() {
         // Read existing users
         const users = await readJsonFile(USERS_FILE, []);
         
-        // Check if any admin exists with wildcard permission
+        // Check if any admin exists with superadmin role or wildcard permission
         const hasAdmin = users.some(user => 
+            user.role === 'superadmin' || 
             user.role === 'admin' || 
             (user.permissions && user.permissions.includes('*'))
         );
@@ -75,19 +76,13 @@ async function ensureDefaultAdmin() {
             const salt = await bcrypt.genSalt(10);
             const passwordHash = await bcrypt.hash(password, salt);
             
-            // Create admin user with wildcard permission and explicit permissions
+            // Create admin user with superadmin role
             const adminUser = {
                 username: 'admin',
                 passwordHash: passwordHash,
-                role: 'admin',
-                permissions: [
-                    '*',
-                    'accounts.manage',
-                    'accounts.view',
-                    'accounts.requests',
-                    'roles.manage'
-                ], // Wildcard permission plus all explicit permissions
-                roles: [], // No roles needed with wildcard
+                role: 'superadmin',  // IMPORTANT: superadmin role
+                permissions: ['admin_all'],  // For compatibility
+                roles: [], // No roles needed for superadmin
                 createdAt: new Date().toISOString(),
                 mustChangePassword: true
             };
@@ -104,7 +99,8 @@ async function ensureDefaultAdmin() {
                 console.log('[OK] Standard-Admin-Benutzer erstellt:');
                 console.log('   Benutzername: admin');
                 console.log('   Passwort: ' + password);
-                console.log('   Permissions: * (Wildcard - Voller Zugriff)');
+                console.log('   Rolle: superadmin');
+                console.log('   Permissions: Alle (Superadmin - Voller Zugriff)');
                 console.log('');
                 console.log('   [!] WICHTIG: Ändern Sie das Passwort nach der ersten Anmeldung!');
                 console.log('='.repeat(70) + '\n');

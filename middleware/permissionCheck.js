@@ -3,7 +3,7 @@
  * Validates user permissions for protected routes
  */
 
-const { hasPermission, hasWildcard } = require('../html/utils/permissions');
+const { hasAnyPermission, isSuperAdmin } = require('../html/utils/permissions');
 const { getUserByUsername } = require('../routes/users');
 const { logger, securityLogger } = require('../html/utils/logger');
 const config = require('../html/utils/config');
@@ -23,10 +23,6 @@ function requirePermission(requiredPermissions) {
         try {
             // Check if user is authenticated
             if (!req.session || !req.session.userId || !req.session.username) {
-                securityLogger.warn('Unauthorized access attempt - no session', {
-                    ip: req.ip,
-                    path: req.path
-                });
                 return res.status(401).json({
                     success: false,
                     error: 'Nicht authentifiziert. Bitte melden Sie sich an.'
@@ -34,11 +30,8 @@ function requirePermission(requiredPermissions) {
             }
 
             // Force disable permissions if configured
-            if (config.forceDisablePermissions) {
-                securityLogger.warn('Permissions system DISABLED via FORCE_DISABLE_PERMISSIONS', {
-                    username: req.session.username,
-                    path: req.path
-                });
+            if (config.forceDisablePermissions === true) {
+                securityLogger.warn('Permissions system DISABLED via FORCE_DISABLE_PERMISSIONS');
                 return next();
             }
 
@@ -46,49 +39,29 @@ function requirePermission(requiredPermissions) {
             const user = await getUserByUsername(req.session.username);
             
             if (!user) {
-                securityLogger.warn('Unauthorized access attempt - user not found', {
-                    ip: req.ip,
-                    username: req.session.username,
-                    path: req.path
-                });
                 return res.status(401).json({
                     success: false,
                     error: 'Benutzer nicht gefunden.'
                 });
             }
 
-            // Check if user has wildcard permission
-            // Wildcard (*) grants access to everything
-            if (hasWildcard(user)) {
-                securityLogger.info('Access granted via wildcard permission', {
-                    username: req.session.username,
-                    path: req.path,
-                    requiredPermissions: permissions
-                });
+            // Superadmin always passes
+            if (isSuperAdmin(user)) {
                 return next();
             }
 
             // Check if user has any of the required permissions
-            let hasAccess = false;
-            for (const permission of permissions) {
-                if (await hasPermission(user, permission)) {
-                    hasAccess = true;
-                    break;
-                }
-            }
-
-            if (hasAccess) {
+            if (await hasAnyPermission(user, permissions)) {
                 return next();
             }
 
             // Access denied
             securityLogger.warn('Permission denied', {
-                ip: req.ip,
                 username: req.session.username,
                 path: req.path,
                 requiredPermissions: permissions,
-                userPermissions: user.permissions || [],
-                userRoles: user.roles || []
+                userRole: user.role,
+                userPermissions: user.permissions || []
             });
 
             return res.status(403).json({
@@ -97,10 +70,7 @@ function requirePermission(requiredPermissions) {
             });
 
         } catch (error) {
-            logger.error('Error in permission check middleware:', { 
-                error: error.message,
-                stack: error.stack 
-            });
+            logger.error('Error in permission check:', error);
             return res.status(500).json({
                 success: false,
                 error: 'Ein Fehler ist aufgetreten.'
