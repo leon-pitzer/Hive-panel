@@ -56,6 +56,26 @@ function validateEnv() {
         warnings.push('reCAPTCHA is disabled (no keys configured). Set RECAPTCHA_SITE_KEY and RECAPTCHA_SECRET_KEY to enable bot protection.');
     }
 
+    // Check MySQL Database Configuration
+    if (!process.env.DB_HOST) {
+        errors.push('DB_HOST is required for MySQL database connection');
+    }
+    if (!process.env.DB_USER) {
+        errors.push('DB_USER is required for MySQL database connection');
+    }
+    if (!process.env.DB_PASSWORD) {
+        errors.push('DB_PASSWORD is required for MySQL database connection');
+    }
+    if (!process.env.DB_NAME) {
+        errors.push('DB_NAME is required for MySQL database connection');
+    }
+    if (process.env.DB_PORT) {
+        const dbPort = parseInt(process.env.DB_PORT, 10);
+        if (isNaN(dbPort) || dbPort < 1 || dbPort > 65535) {
+            errors.push('DB_PORT must be a number between 1 and 65535');
+        }
+    }
+
     // Log warnings
     warnings.forEach(warning => {
         logger.warn(`⚠️  ${warning}`);
