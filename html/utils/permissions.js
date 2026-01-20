@@ -6,6 +6,7 @@
 const path = require('path');
 const { readJsonFile } = require('./fileOperations');
 const { logger } = require('./logger');
+const { getPool } = require('./database');
 
 const ROLES_FILE = path.join(__dirname, '../../data/roles.json');
 
@@ -63,13 +64,21 @@ function hasWildcard(user) {
  */
 async function getRolePermissions(roleId) {
     try {
-        // TODO: Replace with MySQL query in future
-        // SELECT permissions FROM roles WHERE id = ?
-        const rolesData = await readJsonFile(ROLES_FILE, { roles: [] });
-        const role = rolesData.roles.find(r => r.id === roleId);
-        return role ? role.permissions : [];
+        const pool = getPool();
+        const [rows] = await pool.query(
+            `SELECT p.name
+            FROM role_permissions rp
+            JOIN permissions p ON rp.permission_id = p.id
+            WHERE rp.role_id = ?`,
+            [roleId]
+        );
+        
+        return rows.map(row => row.name);
     } catch (error) {
-        logger.error('Error getting role permissions:', { error: error.message, roleId });
+        logger.error('Error getting role permissions from database:', { 
+            error: error.message, 
+            roleId 
+        });
         return [];
     }
 }
@@ -228,12 +237,39 @@ async function hasAllPermissions(user, permissions) {
  */
 async function getRoleById(roleId) {
     try {
-        // TODO: Replace with MySQL query in future
-        // SELECT * FROM roles WHERE id = ?
-        const rolesData = await readJsonFile(ROLES_FILE, { roles: [] });
-        return rolesData.roles.find(r => r.id === roleId) || null;
+        const pool = getPool();
+        const [rows] = await pool.query(
+            `SELECT id, name, description, created_at AS createdAt, created_by AS createdBy,
+                    updated_at AS updatedAt, updated_by AS updatedBy
+            FROM roles
+            WHERE id = ?
+            LIMIT 1`,
+            [roleId]
+        );
+
+        if (rows.length === 0) {
+            return null;
+        }
+
+        const role = rows[0];
+
+        // Get role permissions
+        const [permRows] = await pool.query(
+            `SELECT p.name
+            FROM role_permissions rp
+            JOIN permissions p ON rp.permission_id = p.id
+            WHERE rp.role_id = ?`,
+            [roleId]
+        );
+
+        role.permissions = permRows.map(row => row.name);
+
+        return role;
     } catch (error) {
-        logger.error('Error getting role by ID:', { error: error.message, roleId });
+        logger.error('Error getting role by ID from database:', { 
+            error: error.message, 
+            roleId 
+        });
         return null;
     }
 }
@@ -244,12 +280,29 @@ async function getRoleById(roleId) {
  */
 async function getAllRoles() {
     try {
-        // TODO: Replace with MySQL query in future
-        // SELECT * FROM roles ORDER BY name
-        const rolesData = await readJsonFile(ROLES_FILE, { roles: [] });
-        return rolesData.roles;
+        const pool = getPool();
+        const [rows] = await pool.query(
+            `SELECT id, name, description, created_at AS createdAt, created_by AS createdBy,
+                    updated_at AS updatedAt, updated_by AS updatedBy
+            FROM roles
+            ORDER BY name`
+        );
+
+        // Get permissions for each role
+        for (const role of rows) {
+            const [permRows] = await pool.query(
+                `SELECT p.name
+                FROM role_permissions rp
+                JOIN permissions p ON rp.permission_id = p.id
+                WHERE rp.role_id = ?`,
+                [role.id]
+            );
+            role.permissions = permRows.map(row => row.name);
+        }
+
+        return rows;
     } catch (error) {
-        logger.error('Error getting all roles:', { error: error.message });
+        logger.error('Error getting all roles from database:', { error: error.message });
         return [];
     }
 }
