@@ -54,6 +54,19 @@ const AbsencesManager = (function() {
     }
     
     /**
+     * Helper: Get user-friendly error message
+     */
+    function getErrorMessage(error) {
+        // Check for network error (fetch failures typically result in TypeError)
+        if (error instanceof TypeError) {
+            return 'Netzwerkfehler - bitte Verbindung prüfen';
+        }
+        
+        // Return the existing error message for other errors
+        return error.message;
+    }
+    
+    /**
      * Set minimum dates for date inputs (3 days from today)
      */
     function setMinimumDates() {
@@ -217,18 +230,12 @@ const AbsencesManager = (function() {
         } catch (error) {
             console.error('Error loading absences:', error);
             
-            // Check for network error
-            let errorMessage = error.message;
-            if (error instanceof TypeError && error.message.includes('fetch')) {
-                errorMessage = 'Netzwerkfehler - bitte Verbindung prüfen';
-            }
-            
             const tbody = document.getElementById('my-absences-tbody');
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: var(--spacing-xl); color: var(--error);">
-                            ${escapeHtml(errorMessage)}
+                            ${escapeHtml(getErrorMessage(error))}
                         </td>
                     </tr>
                 `;
@@ -317,18 +324,12 @@ const AbsencesManager = (function() {
         } catch (error) {
             console.error('Error loading all absences:', error);
             
-            // Check for network error
-            let errorMessage = error.message;
-            if (error instanceof TypeError && error.message.includes('fetch')) {
-                errorMessage = 'Netzwerkfehler - bitte Verbindung prüfen';
-            }
-            
             const tbody = document.getElementById('all-absences-tbody');
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align: center; padding: var(--spacing-xl); color: var(--error);">
-                            ${escapeHtml(errorMessage)}
+                            ${escapeHtml(getErrorMessage(error))}
                         </td>
                     </tr>
                 `;
