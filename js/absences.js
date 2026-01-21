@@ -189,12 +189,30 @@ const AbsencesManager = (function() {
                 credentials: 'same-origin'
             });
             
+            // Handle different HTTP status codes
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = 'Fehler beim Laden der Abwesenheiten';
+                
+                if (response.status === 401) {
+                    errorMessage = 'Nicht authentifiziert. Bitte melden Sie sich an.';
+                } else if (response.status === 403) {
+                    errorMessage = 'Keine Berechtigung zum Anzeigen der Abwesenheiten.';
+                } else if (response.status === 404) {
+                    errorMessage = 'API-Endpunkt nicht gefunden.';
+                } else if (response.status >= 500) {
+                    errorMessage = 'Serverfehler. Bitte versuchen Sie es später erneut.';
+                }
+                
+                throw new Error(errorMessage);
+            }
+            
             const data = await response.json();
             
             if (data.success && data.absences) {
                 displayMyAbsences(data.absences);
             } else {
-                throw new Error('Failed to load absences');
+                throw new Error(data.error || 'Failed to load absences');
             }
         } catch (error) {
             console.error('Error loading absences:', error);
@@ -203,7 +221,7 @@ const AbsencesManager = (function() {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: var(--spacing-xl); color: var(--error);">
-                            Fehler beim Laden der Abwesenheiten
+                            ${escapeHtml(error.message)}
                         </td>
                     </tr>
                 `;
@@ -264,12 +282,30 @@ const AbsencesManager = (function() {
                 credentials: 'same-origin'
             });
             
+            // Handle different HTTP status codes
+            if (!response.ok) {
+                const errorText = await response.text();
+                let errorMessage = 'Fehler beim Laden der Abwesenheiten';
+                
+                if (response.status === 401) {
+                    errorMessage = 'Nicht authentifiziert. Bitte melden Sie sich an.';
+                } else if (response.status === 403) {
+                    errorMessage = 'Keine Berechtigung zum Anzeigen aller Abwesenheiten.';
+                } else if (response.status === 404) {
+                    errorMessage = 'API-Endpunkt nicht gefunden.';
+                } else if (response.status >= 500) {
+                    errorMessage = 'Serverfehler. Bitte versuchen Sie es später erneut.';
+                }
+                
+                throw new Error(errorMessage);
+            }
+            
             const data = await response.json();
             
             if (data.success && data.absences) {
                 displayAllAbsences(data.absences);
             } else {
-                throw new Error('Failed to load all absences');
+                throw new Error(data.error || 'Failed to load all absences');
             }
         } catch (error) {
             console.error('Error loading all absences:', error);
@@ -278,7 +314,7 @@ const AbsencesManager = (function() {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align: center; padding: var(--spacing-xl); color: var(--error);">
-                            Fehler beim Laden der Abwesenheiten
+                            ${escapeHtml(error.message)}
                         </td>
                     </tr>
                 `;
