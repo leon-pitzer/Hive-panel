@@ -11,6 +11,7 @@ const FileStore = require('session-file-store')(session);
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
 const fs = require('fs');
 const csurf = require('csurf');
@@ -46,6 +47,15 @@ const PORT = process.env.PORT || 3000;
 
 // Trust proxy (if behind reverse proxy)
 app.set('trust proxy', 1);
+
+// Rate limiting for page access
+const pageAccessLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minute
+    max: 60, // 60 requests per minute (generous for page navigation)
+    message: { error: 'Too many requests, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
 
 // Security headers with Helmet
 app.use(helmet(config.helmet));
@@ -181,7 +191,7 @@ app.get('/', (req, res) => {
 });
 
 // Protected route for dashboard
-app.get('/dashboard.html', (req, res) => {
+app.get('/dashboard.html', pageAccessLimiter, (req, res) => {
     // Check if user is authenticated
     if (!req.session || !req.session.userId) {
         return res.redirect('/');
@@ -190,7 +200,7 @@ app.get('/dashboard.html', (req, res) => {
 });
 
 // Protected route for account settings
-app.get('/account.html', (req, res) => {
+app.get('/account.html', pageAccessLimiter, (req, res) => {
     // Check if user is authenticated
     if (!req.session || !req.session.userId) {
         return res.redirect('/');
@@ -199,12 +209,12 @@ app.get('/account.html', (req, res) => {
 });
 
 // Protected route for account management (admin only)
-app.get('/html/admin/accounts.html', requirePermission(['manage_accounts', 'view_accounts']), (req, res) => {
+app.get('/html/admin/accounts.html', pageAccessLimiter, requirePermission(['manage_accounts', 'view_accounts']), (req, res) => {
     res.sendFile(path.join(__dirname, 'html/admin/accounts.html'));
 });
 
 // Protected route for absences
-app.get('/html/absences.html', (req, res) => {
+app.get('/html/absences.html', pageAccessLimiter, (req, res) => {
     // Check if user is authenticated
     if (!req.session || !req.session.userId) {
         return res.redirect('/');
