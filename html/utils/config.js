@@ -78,20 +78,23 @@ module.exports = {
         contentSecurityPolicy: {
             directives: {
                 defaultSrc: ["'self'"],
-                scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com", "https://www.gstatic.com", "https://unpkg.com"],
+                scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com", "https://www.gstatic.com", "https://unpkg.com", "https://cdnjs.cloudflare.com", "https://ajax.cloudflare.com"],
                 styleSrc: ["'self'", "'unsafe-inline'"],
                 imgSrc: ["'self'", "data:", "https:"],
-                connectSrc: ["'self'", "https://www.google.com", "https://unpkg.com"],
-                fontSrc: ["'self'"],
+                connectSrc: ["'self'", "https://www.google.com", "https://*.cloudflare.com"],
+                fontSrc: ["'self'", "https://fonts.gstatic.com"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
-                frameSrc: ["https://www.google.com", "https://www.gstatic.com"]
+                frameSrc: ["https://www.google.com", "https://www.gstatic.com"],
+                upgradeInsecureRequests: []
             }
         },
         hsts: {
             maxAge: 31536000,
             includeSubDomains: true,
             preload: true
-        }
+        },
+        crossOriginEmbedderPolicy: false,
+        crossOriginResourcePolicy: { policy: "cross-origin" }
     }
 };

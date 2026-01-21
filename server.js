@@ -148,6 +148,9 @@ app.get('/api/csrf-token', csrfProtection, (req, res) => {
     res.json({ csrfToken: req.csrfToken() });
 });
 
+// Favicon handler
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // reCAPTCHA config endpoint
 // Legacy endpoint for backwards compatibility
 app.get('/api/recaptcha-config', (req, res) => {
