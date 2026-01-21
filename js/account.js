@@ -70,7 +70,7 @@
                 if (emailField) {
                     if (profile.email) {
                         emailField.value = profile.email;
-                        emailField.placeholder = 'ihre@email.de';
+                        emailField.placeholder = 'E-Mail-Adresse eingeben';
                     } else {
                         emailField.value = '';
                         emailField.placeholder = 'Keine E-Mail hinterlegt';
@@ -82,7 +82,7 @@
                 if (displayNameField) {
                     if (profile.displayName) {
                         displayNameField.value = profile.displayName;
-                        displayNameField.placeholder = 'Ihr Name';
+                        displayNameField.placeholder = 'Anzeigename eingeben';
                     } else {
                         displayNameField.value = '';
                         displayNameField.placeholder = 'Kein Anzeigename hinterlegt';
