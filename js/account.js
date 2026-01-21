@@ -278,7 +278,7 @@
                     // Update displayed email
                     const emailDisplay = document.getElementById('current-email-display');
                     if (emailDisplay) {
-                        emailDisplay.textContent = email;
+                        emailDisplay.textContent = email || 'Keine E-Mail hinterlegt';
                     }
                     
                     // Hide form and show edit button
