@@ -68,6 +68,33 @@
         }
 
         /**
+         * Helper function to render the reCAPTCHA widget
+         * @param {string} elementId - ID of the container element
+         * @param {string} siteKey - reCAPTCHA site key
+         * @returns {boolean} - Whether the render was successful
+         */
+        function renderRecaptchaWidget(elementId, siteKey) {
+            const container = document.getElementById(elementId);
+            if (!container) {
+                return false;
+            }
+            
+            const recaptchaDiv = container.querySelector('.g-recaptcha');
+            if (!recaptchaDiv) {
+                return false;
+            }
+            
+            // Only clear if not already rendered
+            if (!recaptchaDiv.hasChildNodes()) {
+                grecaptcha.render(recaptchaDiv, {
+                    'sitekey': siteKey
+                });
+            }
+            
+            return true;
+        }
+
+        /**
          * Loads the reCAPTCHA widget with timeout and retry logic
          * @param {string} siteKey - reCAPTCHA site key
          * @param {string} elementId - ID of the container element
@@ -78,18 +105,11 @@
             // Check if grecaptcha is already available
             if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
                 try {
-                    const container = document.getElementById(elementId);
-                    if (container) {
-                        // Clear any existing content
-                        const recaptchaDiv = container.querySelector('.g-recaptcha');
-                        if (recaptchaDiv) {
-                            recaptchaDiv.innerHTML = '';
-                            grecaptcha.render(recaptchaDiv, {
-                                'sitekey': siteKey
-                            });
-                        }
+                    if (renderRecaptchaWidget(elementId, siteKey)) {
+                        if (onSuccess) onSuccess();
+                    } else {
+                        throw new Error('Failed to render reCAPTCHA widget');
                     }
-                    if (onSuccess) onSuccess();
                 } catch (err) {
                     console.error('reCAPTCHA render error:', err);
                     if (onError) onError();
@@ -105,18 +125,11 @@
                 if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
                     clearInterval(checkRecaptcha);
                     try {
-                        const container = document.getElementById(elementId);
-                        if (container) {
-                            // Clear any existing content
-                            const recaptchaDiv = container.querySelector('.g-recaptcha');
-                            if (recaptchaDiv) {
-                                recaptchaDiv.innerHTML = '';
-                                grecaptcha.render(recaptchaDiv, {
-                                    'sitekey': siteKey
-                                });
-                            }
+                        if (renderRecaptchaWidget(elementId, siteKey)) {
+                            if (onSuccess) onSuccess();
+                        } else {
+                            throw new Error('Failed to render reCAPTCHA widget');
                         }
-                        if (onSuccess) onSuccess();
                     } catch (err) {
                         console.error('reCAPTCHA render error:', err);
                         if (onError) onError();
