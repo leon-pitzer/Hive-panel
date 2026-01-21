@@ -1703,7 +1703,7 @@ input:focus {
     justify-content: center;
     cursor: pointer;
     transition: all var(--transition-base);
-    z-index: 1000;
+    z-index: 1500;
     box-shadow: var(--shadow-md);
 }
 
