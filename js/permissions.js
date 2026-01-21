@@ -153,6 +153,12 @@ const Permissions = (function() {
                 el.removeAttribute('data-permission-hidden');
             }
         });
+        
+        // Reinitialize Lucide icons after showing/hiding elements
+        // This ensures icons in newly visible elements are rendered
+        if (window.lucide) {
+            window.lucide.createIcons();
+        }
     }
     
     // Public API

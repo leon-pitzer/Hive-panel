@@ -261,6 +261,11 @@
                 Permissions.initializeUI();
             }
             
+            // Initialize account manager AFTER auth is confirmed
+            if (typeof AccountManager !== 'undefined') {
+                await AccountManager.init();
+            }
+            
             // Logout functionality
             const sidebarLogoutButton = document.getElementById('sidebar-logout-button');
             if (sidebarLogoutButton) {
