@@ -223,12 +223,18 @@
     <script src="js/login.js"></script>
     <script>
         // Wait for Lucide to load and initialize all icons
+        let lucideRetries = 0;
+        const maxLucideRetries = 50; // Max 5 seconds (50 * 100ms)
+        
         function initializeLucide() {
             if (window.lucide) {
                 lucide.createIcons();
-            } else {
+            } else if (lucideRetries < maxLucideRetries) {
                 // Retry after 100ms if Lucide isn't loaded yet
+                lucideRetries++;
                 setTimeout(initializeLucide, 100);
+            } else {
+                console.error('Lucide icons library failed to load');
             }
         }
         
