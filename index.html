@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-transform">
     <title>Hive Panel - Login</title>
     
     <!-- CRITICAL: Dark Mode BEFORE CSS loading -->
@@ -221,8 +222,22 @@
     <script src="js/register.js"></script>
     <script src="js/login.js"></script>
     <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
+        // Wait for Lucide to load and initialize all icons
+        function initializeLucide() {
+            if (window.lucide) {
+                lucide.createIcons();
+            } else {
+                // Retry after 100ms if Lucide isn't loaded yet
+                setTimeout(initializeLucide, 100);
+            }
+        }
+        
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeLucide);
+        } else {
+            initializeLucide();
+        }
     </script>
 </body>
 </html>

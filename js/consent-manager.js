@@ -39,6 +39,10 @@
         const banner = document.getElementById('cookie-banner');
         if (banner) {
             banner.classList.add('show');
+            // Reinitialize Lucide icons for cookie banner
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
         }
     }
     
