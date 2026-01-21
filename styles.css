@@ -1679,3 +1679,275 @@ input:focus {
     margin: 0;
     font-size: 1rem;
 }
+
+/* ===== Info Toggle Button & Popup ===== */
+.info-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: var(--surface);
+    border: 1px solid var(--secondary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+}
+
+.info-toggle:hover {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+.info-toggle:hover i {
+    color: white;
+}
+
+.info-toggle i {
+    width: 20px;
+    height: 20px;
+    color: var(--primary-color);
+    transition: color var(--transition-base);
+}
+
+.info-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.info-popup.hidden {
+    display: none;
+}
+
+.info-popup-content {
+    background: var(--surface);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    animation: slideIn 0.3s ease-out;
+}
+
+.info-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.info-close:hover {
+    background: var(--surface-hover);
+}
+
+.info-close i {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+
+.info-popup-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.info-popup-header i {
+    width: 32px;
+    height: 32px;
+    color: var(--primary-color);
+}
+
+.info-popup-header h3 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+}
+
+.info-popup-content p {
+    margin: 0 0 var(--spacing-md) 0;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.info-popup-content p:last-of-type {
+    margin-bottom: 0;
+}
+
+/* ===== Login/Register Card Toggle ===== */
+.login-card-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+}
+
+.login-card {
+    transition: all 0.5s ease-in-out;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.login-card.slide-out-left {
+    animation: slideOutLeft 0.5s ease-in-out forwards;
+}
+
+.login-card.slide-in-left {
+    animation: slideInLeft 0.5s ease-in-out forwards;
+}
+
+.login-card.slide-out-right {
+    animation: slideOutRight 0.5s ease-in-out forwards;
+}
+
+.login-card.slide-in-right {
+    animation: slideInRight 0.5s ease-in-out forwards;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutLeft {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* ===== Password Strength Indicator ===== */
+.password-strength {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    transition: all var(--transition-base);
+}
+
+.password-strength.weak {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+    border: 1px solid var(--error);
+}
+
+.password-strength.medium {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+}
+
+.password-strength.strong {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.strength-label {
+    font-weight: 600;
+}
+
+.form-help {
+    display: block;
+    margin-top: var(--spacing-xs);
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+    .info-toggle {
+        top: 0.5rem;
+        right: 0.5rem;
+        width: 36px;
+        height: 36px;
+    }
+    
+    .info-toggle i {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .info-popup-content {
+        padding: var(--spacing-lg);
+        width: 95%;
+    }
+    
+    .info-popup-header h3 {
+        font-size: 1.25rem;
+    }
+}

@@ -149,7 +149,14 @@ app.get('/api/csrf-token', csrfProtection, (req, res) => {
 });
 
 // reCAPTCHA config endpoint
+// Legacy endpoint for backwards compatibility
 app.get('/api/recaptcha-config', (req, res) => {
+    const recaptchaConfig = getRecaptchaConfig();
+    res.json(recaptchaConfig);
+});
+
+// New endpoint matching Flunar website
+app.get('/api/recaptcha/config', (req, res) => {
     res.json(getRecaptchaConfig());
 });
 

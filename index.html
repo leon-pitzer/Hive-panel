@@ -21,7 +21,29 @@
 </head>
 <body>
     <div class="container">
-        <div class="login-card">
+        <!-- Info Toggle Button -->
+        <button id="info-toggle" class="info-toggle" aria-label="Information">
+            <i data-lucide="info"></i>
+        </button>
+        
+        <!-- Info Popup -->
+        <div id="info-popup" class="info-popup hidden">
+            <div class="info-popup-content">
+                <button id="info-close" class="info-close" aria-label="Schließen">
+                    <i data-lucide="x"></i>
+                </button>
+                <div class="info-popup-header">
+                    <i data-lucide="shield-alert"></i>
+                    <h3>Verwaltungspanel</h3>
+                </div>
+                <p>Dies ist ein Verwaltungspanel für den Hive Discord Server und ist ausschließlich für interne administrative Zwecke vorgesehen.</p>
+                <p>Zugriff nur für autorisierte Administratoren.</p>
+            </div>
+        </div>
+        
+        <div class="login-card-wrapper">
+            <!-- Login Card -->
+            <div class="login-card" id="login-card">
             <div class="logo">
                 <h1>Hive Panel</h1>
             </div>
@@ -57,7 +79,7 @@
                 </div>
                 
                 <div id="recaptcha-container" class="form-group recaptcha-container" style="display: none;">
-                    <div class="g-recaptcha" data-sitekey=""></div>
+                    <div class="g-recaptcha" id="recaptcha-element"></div>
                 </div>
                 
                 <button type="submit" id="login-button" class="btn btn-primary">
@@ -67,11 +89,93 @@
             </form>
             
             <div class="login-info">
-                <a href="/html/register.html" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <a href="#" id="register-toggle" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                     <i data-lucide="user-plus" style="width: 16px; height: 16px;"></i>
                     <span>Noch kein Account? Registrieren</span>
                 </a>
             </div>
+        </div>
+        
+        <!-- Registration Card (Hidden by default) -->
+        <div class="login-card hidden" id="register-card">
+            <div class="logo">
+                <h1>Hive Panel</h1>
+            </div>
+            
+            <h2>Registrierung</h2>
+            
+            <div id="register-error-message" class="error-message hidden"></div>
+            <div id="register-info-message" class="info-message hidden"></div>
+            
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">Benutzername *</label>
+                    <input 
+                        type="text" 
+                        id="register-username" 
+                        name="username" 
+                        required 
+                        pattern="[a-zA-Z0-9_-]+"
+                        minlength="3"
+                        maxlength="30"
+                        autocomplete="username"
+                        placeholder="Benutzername eingeben"
+                    >
+                    <small class="form-help">3-30 Zeichen, nur Buchstaben, Zahlen, _ und -</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-email">E-Mail *</label>
+                    <input 
+                        type="email" 
+                        id="register-email" 
+                        name="email" 
+                        required 
+                        autocomplete="email"
+                        placeholder="beispiel@email.de"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-password">Passwort *</label>
+                    <input 
+                        type="password" 
+                        id="register-password" 
+                        name="password" 
+                        required 
+                        minlength="8"
+                        autocomplete="new-password"
+                        placeholder="Mindestens 8 Zeichen"
+                    >
+                    <div id="password-strength" class="password-strength hidden"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="register-confirm-password">Passwort bestätigen *</label>
+                    <input 
+                        type="password" 
+                        id="register-confirm-password" 
+                        name="confirm-password" 
+                        required 
+                        minlength="8"
+                        autocomplete="new-password"
+                        placeholder="Passwort wiederholen"
+                    >
+                </div>
+                
+                <button type="submit" id="register-button" class="btn btn-primary">
+                    <span class="button-text">Registrieren</span>
+                    <span class="spinner hidden"></span>
+                </button>
+            </form>
+            
+            <div class="login-info">
+                <a href="#" id="login-toggle" style="color: var(--primary-color); text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
+                    <span>Zurück zum Login</span>
+                </a>
+            </div>
+        </div>
         </div>
     </div>
     
@@ -115,6 +219,7 @@
     <script src="js/darkmode.js"></script>
     <script src="js/password-toggle.js"></script>
     <script src="js/cookie-banner.js"></script>
+    <script src="js/register.js"></script>
     <script src="js/login.js"></script>
     <script>
         // Initialize Lucide icons
