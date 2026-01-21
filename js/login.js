@@ -119,7 +119,14 @@
          */
         async function loadRecaptchaConfig() {
             try {
-                const response = await fetch('/api/recaptcha/config');
+                // Try new endpoint first
+                let response = await fetch('/api/recaptcha/config');
+                
+                // Fallback to old endpoint for backward compatibility
+                if (!response.ok && response.status === 404) {
+                    response = await fetch('/api/recaptcha-config');
+                }
+                
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }

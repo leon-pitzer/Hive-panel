@@ -6,6 +6,9 @@
 (function() {
     'use strict';
     
+    // Constants
+    const REDIRECT_DELAY_MS = 3000;
+    
     // Wait for DOM to be ready
     document.addEventListener('DOMContentLoaded', async function() {
         // Check if already logged in
@@ -190,7 +193,7 @@
                         if (loginToggle) {
                             loginToggle.click();
                         }
-                    }, 3000);
+                    }, REDIRECT_DELAY_MS);
                 } else {
                     // Failed registration
                     setLoading(false);
