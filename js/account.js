@@ -23,6 +23,7 @@
         setupDisplayNameForm();
         setupPasswordGenerator();
         setupPasswordStrength();
+        setupEditButtons();
     });
     
     /**
@@ -69,7 +70,17 @@
                     }
                 }
                 
-                // Populate email field
+                // Display current email
+                const emailDisplay = document.getElementById('current-email-display');
+                if (emailDisplay) {
+                    if (profile.email) {
+                        emailDisplay.textContent = profile.email;
+                    } else {
+                        emailDisplay.textContent = 'Keine E-Mail hinterlegt';
+                    }
+                }
+                
+                // Populate email field (hidden initially)
                 const emailField = document.getElementById('email');
                 if (emailField) {
                     if (profile.email) {
@@ -140,9 +151,16 @@
                     form.reset();
                     
                     // Update displayed username
-                    const usernameDisplay = document.getElementById('username-display');
+                    const usernameDisplay = document.getElementById('current-username-display');
                     if (usernameDisplay) {
-                        usernameDisplay.textContent = data.newUsername;
+                        usernameDisplay.textContent = newUsername;
+                    }
+                    
+                    // Hide form and show edit button
+                    form.style.display = 'none';
+                    const editBtn = document.getElementById('edit-username-btn');
+                    if (editBtn) {
+                        editBtn.style.display = 'block';
                     }
                 } else {
                     showToast(data.error || 'Fehler beim Ändern des Benutzernamens', 'error');
@@ -256,6 +274,19 @@
                 
                 if (data.success) {
                     showToast(data.message || 'E-Mail erfolgreich gespeichert', 'success');
+                    
+                    // Update displayed email
+                    const emailDisplay = document.getElementById('current-email-display');
+                    if (emailDisplay) {
+                        emailDisplay.textContent = email;
+                    }
+                    
+                    // Hide form and show edit button
+                    form.style.display = 'none';
+                    const editBtn = document.getElementById('edit-email-btn');
+                    if (editBtn) {
+                        editBtn.style.display = 'block';
+                    }
                 } else {
                     showToast(data.error || 'Fehler beim Speichern der E-Mail', 'error');
                 }
@@ -431,6 +462,53 @@
         setTimeout(() => {
             toast.classList.remove('show');
         }, 4000);
+    }
+    
+    /**
+     * Setup edit buttons for username and email
+     */
+    function setupEditButtons() {
+        // Username edit button
+        const editUsernameBtn = document.getElementById('edit-username-btn');
+        const usernameForm = document.getElementById('username-form');
+        const cancelUsernameBtn = document.getElementById('cancel-username-btn');
+        
+        if (editUsernameBtn && usernameForm) {
+            editUsernameBtn.addEventListener('click', function() {
+                usernameForm.style.display = 'block';
+                editUsernameBtn.style.display = 'none';
+            });
+        }
+        
+        if (cancelUsernameBtn && usernameForm) {
+            cancelUsernameBtn.addEventListener('click', function() {
+                usernameForm.style.display = 'none';
+                editUsernameBtn.style.display = 'block';
+                usernameForm.reset();
+            });
+        }
+        
+        // Email edit button
+        const editEmailBtn = document.getElementById('edit-email-btn');
+        const emailForm = document.getElementById('email-form');
+        const cancelEmailBtn = document.getElementById('cancel-email-btn');
+        
+        if (editEmailBtn && emailForm) {
+            editEmailBtn.addEventListener('click', function() {
+                emailForm.style.display = 'block';
+                editEmailBtn.style.display = 'none';
+            });
+        }
+        
+        if (cancelEmailBtn && emailForm) {
+            cancelEmailBtn.addEventListener('click', function() {
+                emailForm.style.display = 'none';
+                editEmailBtn.style.display = 'block';
+                emailForm.reset();
+                // Reload the email value from display
+                loadProfile();
+            });
+        }
     }
     
     /**

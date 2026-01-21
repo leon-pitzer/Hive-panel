@@ -81,13 +81,17 @@
                         <!-- Username Change -->
                         <div class="dashboard-card">
                             <h3><i data-lucide="user" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Benutzername ändern</h3>
-                            <form id="username-form" class="account-form">
-                                <div class="form-group">
-                                    <label>Aktueller Benutzername</label>
-                                    <div style="padding: var(--spacing-sm) var(--spacing-md); background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius); margin-bottom: var(--spacing-md);">
-                                        <strong id="current-username-display">Wird geladen...</strong>
-                                    </div>
+                            <div class="form-group">
+                                <label>Aktueller Benutzername</label>
+                                <div style="padding: var(--spacing-sm) var(--spacing-md); background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius); margin-bottom: var(--spacing-md);">
+                                    <strong id="current-username-display">Wird geladen...</strong>
                                 </div>
+                            </div>
+                            <button type="button" id="edit-username-btn" class="btn btn-secondary" style="margin-bottom: var(--spacing-sm);">
+                                <i data-lucide="edit"></i>
+                                <span>Benutzername bearbeiten</span>
+                            </button>
+                            <form id="username-form" class="account-form" style="display: none;">
                                 <div class="form-group">
                                     <label for="new-username">Neuer Benutzername</label>
                                     <input type="text" id="new-username" name="newUsername" required 
@@ -97,32 +101,54 @@
                                            maxlength="30">
                                     <small class="form-help">3-30 Zeichen, nur Buchstaben, Zahlen, _ und -</small>
                                 </div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i data-lucide="save"></i>
-                                    <span>Benutzername ändern</span>
-                                </button>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="save"></i>
+                                        <span>Speichern</span>
+                                    </button>
+                                    <button type="button" id="cancel-username-btn" class="btn btn-secondary">
+                                        <i data-lucide="x"></i>
+                                        <span>Abbrechen</span>
+                                    </button>
+                                </div>
                             </form>
                         </div>
                         
                         <!-- Email -->
                         <div class="dashboard-card">
                             <h3><i data-lucide="mail" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> E-Mail-Adresse</h3>
-                            <form id="email-form" class="account-form">
+                            <div class="form-group">
+                                <label>Aktuelle E-Mail-Adresse</label>
+                                <div style="padding: var(--spacing-sm) var(--spacing-md); background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius); margin-bottom: var(--spacing-md);">
+                                    <strong id="current-email-display">Wird geladen...</strong>
+                                </div>
+                            </div>
+                            <button type="button" id="edit-email-btn" class="btn btn-secondary" style="margin-bottom: var(--spacing-sm);">
+                                <i data-lucide="edit"></i>
+                                <span>E-Mail bearbeiten</span>
+                            </button>
+                            <form id="email-form" class="account-form" style="display: none;">
                                 <div class="form-group">
-                                    <label for="email">E-Mail-Adresse</label>
+                                    <label for="email">Neue E-Mail-Adresse</label>
                                     <input type="email" id="email" name="email" required 
                                            placeholder="ihre@email.de">
                                     <small class="form-help">Ihre E-Mail wird verschlüsselt gespeichert</small>
                                 </div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i data-lucide="save"></i>
-                                    <span>E-Mail speichern</span>
-                                </button>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i data-lucide="save"></i>
+                                        <span>Speichern</span>
+                                    </button>
+                                    <button type="button" id="cancel-email-btn" class="btn btn-secondary">
+                                        <i data-lucide="x"></i>
+                                        <span>Abbrechen</span>
+                                    </button>
+                                </div>
                             </form>
                         </div>
                         
                         <!-- Password Change -->
-                        <div class="dashboard-card full-width">
+                        <div class="dashboard-card">
                             <h3><i data-lucide="lock" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Passwort ändern</h3>
                             <form id="password-form" class="account-form">
                                 <div class="form-group">
@@ -150,11 +176,11 @@
                                 <div class="form-actions">
                                     <button type="button" id="generate-password-btn" class="btn btn-secondary">
                                         <i data-lucide="refresh-cw"></i>
-                                        <span>Sicheres Passwort generieren</span>
+                                        <span>Generieren</span>
                                     </button>
                                     <button type="submit" class="btn btn-primary">
                                         <i data-lucide="save"></i>
-                                        <span>Passwort ändern</span>
+                                        <span>Ändern</span>
                                     </button>
                                 </div>
                             </form>

@@ -270,14 +270,19 @@
                 `<span class="badge badge-primary">${escapeHtml(perm)}</span>`
             ).join(' ');
             
+            // Only show toggle button if email exists
+            const emailToggleButton = account.email ? `
+                <button class="btn-reveal" data-action="toggle-email">
+                    <i data-lucide="eye"></i>
+                </button>
+            ` : '';
+            
             return `
                 <tr>
                     <td><strong>${escapeHtml(account.username)}</strong></td>
                     <td>
-                        <span class="censored-text" data-email="${escapeHtml(account.email)}" data-censored="true">${censoredEmail}</span>
-                        <button class="btn-reveal" data-action="toggle-email">
-                            <i data-lucide="eye"></i>
-                        </button>
+                        <span class="censored-text" data-email="${escapeHtml(account.email || '')}" data-censored="true">${censoredEmail}</span>
+                        ${emailToggleButton}
                     </td>
                     <td>${account.role ? `<span class="badge badge-success">${escapeHtml(account.role)}</span>` : '<span class="badge">Keine</span>'}</td>
                     <td>${permissionBadges || '<span class="badge">Keine</span>'}</td>
@@ -759,10 +764,10 @@
      * Censor email address
      */
     function censorEmail(email) {
-        if (!email) return '***';
+        if (!email) return 'Keine hinterlegt';
         
         const parts = email.split('@');
-        if (parts.length !== 2) return '***';
+        if (parts.length !== 2) return 'Keine hinterlegt';
         
         const localPart = parts[0];
         const domain = parts[1];
