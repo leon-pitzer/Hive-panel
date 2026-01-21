@@ -407,6 +407,11 @@
                 sidebarUsernameDisplay.textContent = user.username;
             }
             
+            // Initialize permission-based UI elements
+            if (typeof Permissions !== 'undefined') {
+                Permissions.initializeUI();
+            }
+            
             // Logout functionality
             const sidebarLogoutButton = document.getElementById('sidebar-logout-button');
             if (sidebarLogoutButton) {

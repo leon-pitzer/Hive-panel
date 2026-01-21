@@ -3,13 +3,20 @@
  * Handles account settings forms and interactions
  */
 
-(function() {
+const AccountManager = (function() {
     'use strict';
     
     let csrfToken = null;
+    let initialized = false;
     
-    // Initialize on DOM load
-    document.addEventListener('DOMContentLoaded', async function() {
+    /**
+     * Initialize the account manager
+     * Call this after authentication is confirmed
+     */
+    async function init() {
+        if (initialized) return;
+        initialized = true;
+        
         // Get CSRF token
         csrfToken = await getCsrfToken();
         
@@ -24,7 +31,7 @@
         setupPasswordGenerator();
         setupPasswordStrength();
         setupEditButtons();
-    });
+    }
     
     /**
      * Get CSRF token from server
@@ -533,4 +540,14 @@
             button.classList.remove('loading');
         }
     }
+    
+    // Return public API
+    return {
+        init: init
+    };
 })();
+
+// Make AccountManager available globally
+if (typeof window !== 'undefined') {
+    window.AccountManager = AccountManager;
+}
