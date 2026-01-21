@@ -127,6 +127,9 @@ const AbsencesManager = (function() {
                 return;
             }
             
+            // Validate duration (difference must be at least 3 days as per specification)
+            // Note: This checks end_date - start_date >= 3
+            // Example: Jan 1-4 is valid (3 days difference, 4 calendar days)
             const durationInDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
             if (durationInDays < 3) {
                 showToast('Abwesenheit muss mindestens 3 Tage dauern', 'error');

@@ -79,6 +79,8 @@ function validateAbsenceDates(startDate, endDate) {
     }
     
     // Check if duration is at least 3 days
+    // Note: This checks the difference between dates (end_date - start_date >= 3)
+    // which means 4 calendar days inclusive (e.g., Jan 1-4 is valid: 3 days difference, 4 days inclusive)
     const durationInDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
     if (durationInDays < 3) {
         return { valid: false, error: 'Abwesenheit muss mindestens 3 Tage dauern' };
