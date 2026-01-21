@@ -481,7 +481,7 @@
                 });
             }
             
-            if (cancelBtn && form) {
+            if (cancelBtn && editBtn && form) {
                 cancelBtn.addEventListener('click', function() {
                     form.style.display = 'none';
                     editBtn.style.display = 'block';
