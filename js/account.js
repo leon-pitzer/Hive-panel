@@ -468,47 +468,33 @@
      * Setup edit buttons for username and email
      */
     function setupEditButtons() {
-        // Username edit button
-        const editUsernameBtn = document.getElementById('edit-username-btn');
-        const usernameForm = document.getElementById('username-form');
-        const cancelUsernameBtn = document.getElementById('cancel-username-btn');
-        
-        if (editUsernameBtn && usernameForm) {
-            editUsernameBtn.addEventListener('click', function() {
-                usernameForm.style.display = 'block';
-                editUsernameBtn.style.display = 'none';
-            });
+        // Helper function to setup edit/cancel button pair
+        function setupEditCancelPair(editBtnId, cancelBtnId, formId) {
+            const editBtn = document.getElementById(editBtnId);
+            const cancelBtn = document.getElementById(cancelBtnId);
+            const form = document.getElementById(formId);
+            
+            if (editBtn && form) {
+                editBtn.addEventListener('click', function() {
+                    form.style.display = 'block';
+                    editBtn.style.display = 'none';
+                });
+            }
+            
+            if (cancelBtn && form) {
+                cancelBtn.addEventListener('click', function() {
+                    form.style.display = 'none';
+                    editBtn.style.display = 'block';
+                    form.reset();
+                });
+            }
         }
         
-        if (cancelUsernameBtn && usernameForm) {
-            cancelUsernameBtn.addEventListener('click', function() {
-                usernameForm.style.display = 'none';
-                editUsernameBtn.style.display = 'block';
-                usernameForm.reset();
-            });
-        }
+        // Setup username edit/cancel
+        setupEditCancelPair('edit-username-btn', 'cancel-username-btn', 'username-form');
         
-        // Email edit button
-        const editEmailBtn = document.getElementById('edit-email-btn');
-        const emailForm = document.getElementById('email-form');
-        const cancelEmailBtn = document.getElementById('cancel-email-btn');
-        
-        if (editEmailBtn && emailForm) {
-            editEmailBtn.addEventListener('click', function() {
-                emailForm.style.display = 'block';
-                editEmailBtn.style.display = 'none';
-            });
-        }
-        
-        if (cancelEmailBtn && emailForm) {
-            cancelEmailBtn.addEventListener('click', function() {
-                emailForm.style.display = 'none';
-                editEmailBtn.style.display = 'block';
-                emailForm.reset();
-                // Reload the email value from display
-                loadProfile();
-            });
-        }
+        // Setup email edit/cancel
+        setupEditCancelPair('edit-email-btn', 'cancel-email-btn', 'email-form');
     }
     
     /**
