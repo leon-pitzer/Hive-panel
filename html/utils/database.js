@@ -203,13 +203,33 @@ async function createTables() {
         `);
         logger.info('Table created/verified: registration_requests');
 
+        // Create absences table (for absence/vacation management)
+        await connection.query(`
+            CREATE TABLE IF NOT EXISTS absences (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                start_date DATE NOT NULL,
+                end_date DATE NOT NULL,
+                start_time TIME NULL,
+                end_time TIME NULL,
+                reason TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                INDEX idx_user_id (user_id),
+                INDEX idx_dates (start_date, end_date)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        `);
+        logger.info('Table created/verified: absences');
+
         // Insert default permissions if they don't exist
         const defaultPermissions = [
             { name: 'manage_accounts', description: 'Create, edit, and delete user accounts' },
             { name: 'view_accounts', description: 'View user accounts' },
             { name: 'manage_roles', description: 'Create, edit, and delete roles' },
             { name: 'handle_requests', description: 'Approve or reject registration requests' },
-            { name: 'admin_all', description: 'Full administrative access (legacy)' }
+            { name: 'admin_all', description: 'Full administrative access (legacy)' },
+            { name: 'view_absences', description: 'View all absences' },
+            { name: 'manage_absences', description: 'Manage and delete any absences' }
         ];
 
         for (const perm of defaultPermissions) {

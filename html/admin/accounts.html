@@ -41,6 +41,10 @@
                     <i data-lucide="users-cog"></i>
                     <span>Account-Verwaltung</span>
                 </a>
+                <a href="/html/absences.html" class="sidebar-item">
+                    <i data-lucide="calendar-off"></i>
+                    <span>Abwesenheiten</span>
+                </a>
             </nav>
             
             <div class="sidebar-footer">
@@ -266,6 +270,14 @@
                                 <input type="checkbox" value="admin_all">
                                 <span>admin_all - Alle Admin-Berechtigungen</span>
                             </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="view_absences">
+                                <span>view_absences - Abwesenheiten ansehen</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="manage_absences">
+                                <span>manage_absences - Abwesenheiten verwalten</span>
+                            </label>
                         </div>
                     </div>
                 </form>
@@ -319,6 +331,14 @@
                             <label class="checkbox-label">
                                 <input type="checkbox" value="admin_all">
                                 <span>admin_all - Alle Admin-Berechtigungen</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="view_absences">
+                                <span>view_absences - Abwesenheiten ansehen</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="manage_absences">
+                                <span>manage_absences - Abwesenheiten verwalten</span>
                             </label>
                         </div>
                     </div>
@@ -412,6 +432,10 @@
                 Permissions.initializeUI();
             }
             
+            // Initialize Lucide icons AFTER permissions are set
+            // This ensures icons in permission-hidden elements are rendered when shown
+            lucide.createIcons();
+            
             // Logout functionality
             const sidebarLogoutButton = document.getElementById('sidebar-logout-button');
             if (sidebarLogoutButton) {
@@ -419,9 +443,6 @@
                     await Auth.logout();
                 });
             }
-            
-            // Initialize Lucide icons
-            lucide.createIcons();
         });
     </script>
 </body>
