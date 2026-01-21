@@ -59,14 +59,38 @@
             if (data.success && data.profile) {
                 const profile = data.profile;
                 
+                // Display current username
+                const usernameDisplay = document.getElementById('current-username-display');
+                if (usernameDisplay) {
+                    if (profile.username) {
+                        usernameDisplay.textContent = profile.username;
+                    } else {
+                        usernameDisplay.textContent = 'Kein Benutzername gefunden';
+                    }
+                }
+                
                 // Populate email field
-                if (profile.email) {
-                    document.getElementById('email').value = profile.email;
+                const emailField = document.getElementById('email');
+                if (emailField) {
+                    if (profile.email) {
+                        emailField.value = profile.email;
+                        emailField.placeholder = 'E-Mail-Adresse eingeben';
+                    } else {
+                        emailField.value = '';
+                        emailField.placeholder = 'Keine E-Mail hinterlegt';
+                    }
                 }
                 
                 // Populate display name field
-                if (profile.displayName) {
-                    document.getElementById('display-name').value = profile.displayName;
+                const displayNameField = document.getElementById('display-name');
+                if (displayNameField) {
+                    if (profile.displayName) {
+                        displayNameField.value = profile.displayName;
+                        displayNameField.placeholder = 'Anzeigename eingeben';
+                    } else {
+                        displayNameField.value = '';
+                        displayNameField.placeholder = 'Kein Anzeigename hinterlegt';
+                    }
                 }
             }
         } catch (error) {

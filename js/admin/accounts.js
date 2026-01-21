@@ -111,14 +111,24 @@
      * Setup modal handlers
      */
     function setupModals() {
-        // Close modals on backdrop or X button click
-        document.querySelectorAll('.modal-backdrop, .modal-close, [data-modal]').forEach(element => {
+        // Close modals on backdrop click
+        document.querySelectorAll('.modal-backdrop').forEach(element => {
             element.addEventListener('click', function(e) {
                 if (e.target === this) {
-                    const modalId = this.getAttribute('data-modal') || this.closest('.modal').id;
+                    const modalId = this.closest('.modal').id;
                     if (modalId) {
                         closeModal(modalId);
                     }
+                }
+            });
+        });
+        
+        // Close modals on X button or data-modal button click
+        document.querySelectorAll('.modal-close, [data-modal]').forEach(element => {
+            element.addEventListener('click', function(e) {
+                const modalId = this.getAttribute('data-modal') || this.closest('.modal').id;
+                if (modalId) {
+                    closeModal(modalId);
                 }
             });
         });
