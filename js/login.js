@@ -37,79 +37,51 @@
          */
         async function loadRecaptchaConfig() {
             try {
-                const response = await fetch('/api/recaptcha-config');
+                const response = await fetch('/api/recaptcha/config');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 recaptchaConfig = await response.json();
+                
+                // Validate site key format
+                const isValidSiteKey = recaptchaConfig.siteKey && 
+                                      recaptchaConfig.siteKey.length > 20 && 
+                                      !recaptchaConfig.siteKey.includes('your-recaptcha');
 
-                if (recaptchaConfig.enabled && recaptchaConfig.siteKey) {
-                    // Show reCAPTCHA container
-                    const recaptchaContainer = document.getElementById('recaptcha-container');
-                    if (recaptchaContainer) {
-                        recaptchaContainer.style.display = 'block';
-                        
-                        // Load the reCAPTCHA widget with robust error handling
-                        loadRecaptchaWidget(
-                            recaptchaConfig.siteKey,
-                            'recaptcha-container',
-                            () => {
-                                // Error callback
-                                console.error('Failed to load reCAPTCHA widget');
-                                showError('reCAPTCHA konnte nicht geladen werden. Bitte laden Sie die Seite neu.');
-                            },
-                            () => {
-                                // Success callback
-                                console.log('reCAPTCHA widget loaded successfully');
-                            }
-                        );
-                    }
+                if (recaptchaConfig.enabled && isValidSiteKey) {
+                    document.getElementById('recaptcha-container').style.display = 'block';
+                    
+                    loadRecaptchaWidget(
+                        recaptchaConfig.siteKey, 
+                        'recaptcha-element', 
+                        function() { showRecaptchaError(); },
+                        function() { console.log('reCAPTCHA widget loaded successfully'); }
+                    );
                 }
             } catch (error) {
-                console.warn('Failed to load reCAPTCHA config:', error);
+                console.error('Failed to load reCAPTCHA config:', error);
             }
         }
-
+        
         /**
-         * Helper function to render the reCAPTCHA widget
-         * @param {string} elementId - ID of the container element
-         * @param {string} siteKey - reCAPTCHA site key
-         * @returns {boolean} - Whether the render was successful
+         * Show reCAPTCHA error message
          */
-        function renderRecaptchaWidget(elementId, siteKey) {
-            const container = document.getElementById(elementId);
-            if (!container) {
-                return false;
-            }
-            
-            const recaptchaDiv = container.querySelector('.g-recaptcha');
-            if (!recaptchaDiv) {
-                return false;
-            }
-            
-            // Only clear if not already rendered
-            if (!recaptchaDiv.hasChildNodes()) {
-                grecaptcha.render(recaptchaDiv, {
-                    'sitekey': siteKey
-                });
-            }
-            
-            return true;
+        function showRecaptchaError() {
+            showError('reCAPTCHA konnte nicht geladen werden. Bitte laden Sie die Seite neu.');
         }
 
         /**
-         * Loads the reCAPTCHA widget with timeout and retry logic
+         * Helper function to load reCAPTCHA with timeout
          * @param {string} siteKey - reCAPTCHA site key
-         * @param {string} elementId - ID of the container element
+         * @param {string} elementId - ID of the element to render into
          * @param {Function} onError - Error callback
          * @param {Function} onSuccess - Success callback
          */
         function loadRecaptchaWidget(siteKey, elementId, onError, onSuccess) {
-            // Check if grecaptcha is already available
             if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
                 try {
-                    if (renderRecaptchaWidget(elementId, siteKey)) {
-                        if (onSuccess) onSuccess();
-                    } else {
-                        throw new Error('Failed to render reCAPTCHA widget');
-                    }
+                    grecaptcha.render(elementId, { 'sitekey': siteKey });
+                    if (onSuccess) onSuccess();
                 } catch (err) {
                     console.error('reCAPTCHA render error:', err);
                     if (onError) onError();
@@ -119,17 +91,14 @@
             
             // Wait for grecaptcha to load with timeout
             let attempts = 0;
-            const maxAttempts = 50; // 5 seconds max (50 * 100ms)
+            const maxAttempts = 50; // 5 seconds max
             const checkRecaptcha = setInterval(() => {
                 attempts++;
                 if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
                     clearInterval(checkRecaptcha);
                     try {
-                        if (renderRecaptchaWidget(elementId, siteKey)) {
-                            if (onSuccess) onSuccess();
-                        } else {
-                            throw new Error('Failed to render reCAPTCHA widget');
-                        }
+                        grecaptcha.render(elementId, { 'sitekey': siteKey });
+                        if (onSuccess) onSuccess();
                     } catch (err) {
                         console.error('reCAPTCHA render error:', err);
                         if (onError) onError();
