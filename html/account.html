@@ -83,6 +83,12 @@
                             <h3><i data-lucide="user" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Benutzername ändern</h3>
                             <form id="username-form" class="account-form">
                                 <div class="form-group">
+                                    <label>Aktueller Benutzername</label>
+                                    <div style="padding: var(--spacing-sm) var(--spacing-md); background: var(--color-bg-secondary); border: 1px solid var(--color-border); border-radius: var(--border-radius); margin-bottom: var(--spacing-md);">
+                                        <strong id="current-username-display">Wird geladen...</strong>
+                                    </div>
+                                </div>
+                                <div class="form-group">
                                     <label for="new-username">Neuer Benutzername</label>
                                     <input type="text" id="new-username" name="newUsername" required 
                                            placeholder="Neuer Benutzername"
