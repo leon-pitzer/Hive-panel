@@ -216,12 +216,19 @@ const AbsencesManager = (function() {
             }
         } catch (error) {
             console.error('Error loading absences:', error);
+            
+            // Check for network error
+            let errorMessage = error.message;
+            if (error instanceof TypeError && error.message.includes('fetch')) {
+                errorMessage = 'Netzwerkfehler - bitte Verbindung prüfen';
+            }
+            
             const tbody = document.getElementById('my-absences-tbody');
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="5" style="text-align: center; padding: var(--spacing-xl); color: var(--error);">
-                            ${escapeHtml(error.message)}
+                            ${escapeHtml(errorMessage)}
                         </td>
                     </tr>
                 `;
@@ -309,12 +316,19 @@ const AbsencesManager = (function() {
             }
         } catch (error) {
             console.error('Error loading all absences:', error);
+            
+            // Check for network error
+            let errorMessage = error.message;
+            if (error instanceof TypeError && error.message.includes('fetch')) {
+                errorMessage = 'Netzwerkfehler - bitte Verbindung prüfen';
+            }
+            
             const tbody = document.getElementById('all-absences-tbody');
             if (tbody) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="6" style="text-align: center; padding: var(--spacing-xl); color: var(--error);">
-                            ${escapeHtml(error.message)}
+                            ${escapeHtml(errorMessage)}
                         </td>
                     </tr>
                 `;
