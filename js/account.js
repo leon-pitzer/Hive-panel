@@ -61,8 +61,12 @@
                 
                 // Display current username
                 const usernameDisplay = document.getElementById('current-username-display');
-                if (usernameDisplay && profile.username) {
-                    usernameDisplay.textContent = profile.username;
+                if (usernameDisplay) {
+                    if (profile.username) {
+                        usernameDisplay.textContent = profile.username;
+                    } else {
+                        usernameDisplay.textContent = 'Kein Benutzername gefunden';
+                    }
                 }
                 
                 // Populate email field
