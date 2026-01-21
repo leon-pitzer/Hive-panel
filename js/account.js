@@ -23,6 +23,7 @@
         setupDisplayNameForm();
         setupPasswordGenerator();
         setupPasswordStrength();
+        setupEditButtons();
     });
     
     /**
@@ -69,7 +70,17 @@
                     }
                 }
                 
-                // Populate email field
+                // Display current email
+                const emailDisplay = document.getElementById('current-email-display');
+                if (emailDisplay) {
+                    if (profile.email) {
+                        emailDisplay.textContent = profile.email;
+                    } else {
+                        emailDisplay.textContent = 'Keine E-Mail hinterlegt';
+                    }
+                }
+                
+                // Populate email field (hidden initially)
                 const emailField = document.getElementById('email');
                 if (emailField) {
                     if (profile.email) {
@@ -140,9 +151,16 @@
                     form.reset();
                     
                     // Update displayed username
-                    const usernameDisplay = document.getElementById('username-display');
+                    const usernameDisplay = document.getElementById('current-username-display');
                     if (usernameDisplay) {
-                        usernameDisplay.textContent = data.newUsername;
+                        usernameDisplay.textContent = newUsername;
+                    }
+                    
+                    // Hide form and show edit button
+                    form.style.display = 'none';
+                    const editBtn = document.getElementById('edit-username-btn');
+                    if (editBtn) {
+                        editBtn.style.display = 'block';
                     }
                 } else {
                     showToast(data.error || 'Fehler beim Ändern des Benutzernamens', 'error');
@@ -256,6 +274,19 @@
                 
                 if (data.success) {
                     showToast(data.message || 'E-Mail erfolgreich gespeichert', 'success');
+                    
+                    // Update displayed email
+                    const emailDisplay = document.getElementById('current-email-display');
+                    if (emailDisplay) {
+                        emailDisplay.textContent = email || 'Keine E-Mail hinterlegt';
+                    }
+                    
+                    // Hide form and show edit button
+                    form.style.display = 'none';
+                    const editBtn = document.getElementById('edit-email-btn');
+                    if (editBtn) {
+                        editBtn.style.display = 'block';
+                    }
                 } else {
                     showToast(data.error || 'Fehler beim Speichern der E-Mail', 'error');
                 }
@@ -431,6 +462,39 @@
         setTimeout(() => {
             toast.classList.remove('show');
         }, 4000);
+    }
+    
+    /**
+     * Setup edit buttons for username and email
+     */
+    function setupEditButtons() {
+        // Helper function to setup edit/cancel button pair
+        function setupEditCancelPair(editBtnId, cancelBtnId, formId) {
+            const editBtn = document.getElementById(editBtnId);
+            const cancelBtn = document.getElementById(cancelBtnId);
+            const form = document.getElementById(formId);
+            
+            if (editBtn && form) {
+                editBtn.addEventListener('click', function() {
+                    form.style.display = 'block';
+                    editBtn.style.display = 'none';
+                });
+            }
+            
+            if (cancelBtn && editBtn && form) {
+                cancelBtn.addEventListener('click', function() {
+                    form.style.display = 'none';
+                    editBtn.style.display = 'block';
+                    form.reset();
+                });
+            }
+        }
+        
+        // Setup username edit/cancel
+        setupEditCancelPair('edit-username-btn', 'cancel-username-btn', 'username-form');
+        
+        // Setup email edit/cancel
+        setupEditCancelPair('edit-email-btn', 'cancel-email-btn', 'email-form');
     }
     
     /**
