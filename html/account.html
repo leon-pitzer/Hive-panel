@@ -16,7 +16,7 @@
     </script>
     
     <link rel="stylesheet" href="../styles.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐝</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5' fill='%23f59e0b' stroke='%23d97706' stroke-width='3'/><polygon points='50,20 75,35 75,65 50,80 25,65 25,35' fill='%23fbbf24'/></svg>">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
@@ -147,6 +147,39 @@
                             </form>
                         </div>
                         
+                        <!-- Display Name -->
+                        <div class="dashboard-card">
+                            <h3><i data-lucide="id-card" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Anzeigename</h3>
+                            <form id="displayname-form" class="account-form">
+                                <div class="form-group">
+                                    <label for="display-name">Anzeigename</label>
+                                    <input type="text" id="display-name" name="displayName" required 
+                                           placeholder="Ihr Name"
+                                           maxlength="50">
+                                    <small class="form-help">Maximal 50 Zeichen</small>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i data-lucide="save"></i>
+                                    <span>Anzeigename speichern</span>
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Appearance Settings -->
+                        <div class="dashboard-card">
+                            <h3><i data-lucide="palette" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Darstellung</h3>
+                            <div class="dark-mode-toggle-wrapper">
+                                <div class="dark-mode-info">
+                                    <h4>Dark Mode</h4>
+                                    <p>Wechseln Sie zwischen hellem und dunklem Design</p>
+                                </div>
+                                <button type="button" id="dark-mode-toggle" class="dark-mode-toggle-btn">
+                                    <i data-lucide="moon"></i>
+                                    <span class="toggle-text">Dark Mode</span>
+                                </button>
+                            </div>
+                        </div>
+                        
                         <!-- Password Change -->
                         <div class="dashboard-card">
                             <h3><i data-lucide="lock" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Passwort ändern</h3>
@@ -184,39 +217,6 @@
                                     </button>
                                 </div>
                             </form>
-                        </div>
-                        
-                        <!-- Display Name -->
-                        <div class="dashboard-card">
-                            <h3><i data-lucide="id-card" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Anzeigename</h3>
-                            <form id="displayname-form" class="account-form">
-                                <div class="form-group">
-                                    <label for="display-name">Anzeigename</label>
-                                    <input type="text" id="display-name" name="displayName" required 
-                                           placeholder="Ihr Name"
-                                           maxlength="50">
-                                    <small class="form-help">Maximal 50 Zeichen</small>
-                                </div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i data-lucide="save"></i>
-                                    <span>Anzeigename speichern</span>
-                                </button>
-                            </form>
-                        </div>
-                        
-                        <!-- Appearance Settings -->
-                        <div class="dashboard-card">
-                            <h3><i data-lucide="palette" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle;"></i> Darstellung</h3>
-                            <div class="dark-mode-toggle-wrapper">
-                                <div class="dark-mode-info">
-                                    <h4>Dark Mode</h4>
-                                    <p>Wechseln Sie zwischen hellem und dunklem Design</p>
-                                </div>
-                                <button type="button" id="dark-mode-toggle" class="dark-mode-toggle-btn">
-                                    <i data-lucide="moon"></i>
-                                    <span class="toggle-text">Dark Mode</span>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>

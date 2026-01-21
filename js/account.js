@@ -103,9 +103,31 @@
                         displayNameField.placeholder = 'Kein Anzeigename hinterlegt';
                     }
                 }
+            } else {
+                // Handle case when profile data is not available
+                const usernameDisplay = document.getElementById('current-username-display');
+                if (usernameDisplay) {
+                    usernameDisplay.textContent = 'Keine Daten verfügbar';
+                }
+                
+                const emailDisplay = document.getElementById('current-email-display');
+                if (emailDisplay) {
+                    emailDisplay.textContent = 'Keine E-Mail hinterlegt';
+                }
             }
         } catch (error) {
             console.error('Error loading profile:', error);
+            
+            // Fallback values when loading fails
+            const usernameDisplay = document.getElementById('current-username-display');
+            if (usernameDisplay) {
+                usernameDisplay.textContent = 'Fehler beim Laden';
+            }
+            
+            const emailDisplay = document.getElementById('current-email-display');
+            if (emailDisplay) {
+                emailDisplay.textContent = 'Fehler beim Laden';
+            }
         }
     }
     
