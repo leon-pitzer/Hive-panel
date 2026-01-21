@@ -1151,18 +1151,19 @@ input:focus {
 
 
 /* ===== Cookie Banner ===== */
+/* Cookie Banner - Compact Design */
 .cookie-banner {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--card-bg);
-    border-top: 1px solid var(--border-color);
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-    padding: var(--spacing-lg);
+    background: var(--surface);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: var(--spacing-sm) var(--spacing-md);
+    z-index: 1000;
     transform: translateY(100%);
     transition: transform var(--transition-base);
-    z-index: 2000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .cookie-banner.show {
@@ -1175,48 +1176,55 @@ input:focus {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--spacing-xl);
+    gap: var(--spacing-md);
     flex-wrap: wrap;
 }
 
 .cookie-banner-text {
     display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-md);
+    align-items: center;
+    gap: var(--spacing-sm);
     flex: 1;
-    min-width: 300px;
+    min-width: 200px;
 }
 
 .cookie-banner-text i {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
     color: var(--primary-color);
     flex-shrink: 0;
-    margin-top: 2px;
+}
+
+.cookie-banner-text div {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
 }
 
 .cookie-banner-text h4 {
-    margin: 0 0 var(--spacing-xs) 0;
-    font-size: 1rem;
+    margin: 0;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--text-primary);
 }
 
 .cookie-banner-text p {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
 .cookie-banner-buttons {
     display: flex;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     flex-shrink: 0;
-    flex-wrap: wrap;
 }
 
 .cookie-banner-buttons .btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.8rem;
     white-space: nowrap;
 }
 
@@ -1285,13 +1293,13 @@ input:focus {
 
 @media (max-width: 768px) {
     .cookie-banner {
-        padding: var(--spacing-md);
+        padding: var(--spacing-sm);
     }
     
     .cookie-banner-content {
         flex-direction: column;
         align-items: stretch;
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
     }
     
     .cookie-banner-text {
@@ -1299,12 +1307,12 @@ input:focus {
     }
     
     .cookie-banner-buttons {
-        flex-direction: column;
+        flex-direction: row;
         width: 100%;
     }
     
     .cookie-banner-buttons .btn {
-        width: 100%;
+        flex: 1;
     }
     
     .cookie-blocker-overlay {
