@@ -81,11 +81,11 @@ module.exports = {
                 scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com", "https://www.gstatic.com", "https://unpkg.com"],
                 styleSrc: ["'self'", "'unsafe-inline'"],
                 imgSrc: ["'self'", "data:", "https:"],
-                connectSrc: ["'self'"],
+                connectSrc: ["'self'", "https://www.google.com"],
                 fontSrc: ["'self'"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
-                frameSrc: ["https://www.google.com"]
+                frameSrc: ["https://www.google.com", "https://www.gstatic.com"]
             }
         },
         hsts: {
