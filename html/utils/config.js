@@ -81,7 +81,7 @@ module.exports = {
                 scriptSrc: ["'self'", "'unsafe-inline'", "https://www.google.com", "https://www.gstatic.com", "https://unpkg.com", "https://cdnjs.cloudflare.com", "https://ajax.cloudflare.com"],
                 styleSrc: ["'self'", "'unsafe-inline'"],
                 imgSrc: ["'self'", "data:", "https:"],
-                connectSrc: ["'self'", "https://www.google.com", "https://*.cloudflare.com"],
+                connectSrc: ["'self'", "https://www.google.com", "https://*.cloudflare.com", "https://unpkg.com"],
                 fontSrc: ["'self'", "https://fonts.gstatic.com"],
                 objectSrc: ["'none'"],
                 mediaSrc: ["'self'"],
