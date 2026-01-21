@@ -52,6 +52,14 @@
      * All actual permission enforcement happens on the server.
      */
     async function checkPermissions() {
+        // First ensure the user is loaded by calling Auth.checkAuthStatus()
+        if (typeof Auth !== 'undefined') {
+            const authStatus = await Auth.checkAuthStatus();
+            if (!authStatus.authenticated) {
+                return false;
+            }
+        }
+        
         if (typeof Permissions === 'undefined') {
             return false;
         }
