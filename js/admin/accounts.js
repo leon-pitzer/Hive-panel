@@ -19,7 +19,9 @@
         'view_accounts',
         'handle_requests',
         'manage_roles',
-        'admin_all'
+        'admin_all',
+        'view_absences',
+        'manage_absences'
     ];
     
     // Initialize on DOM load

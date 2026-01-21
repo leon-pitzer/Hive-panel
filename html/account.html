@@ -41,6 +41,10 @@
                     <i data-lucide="users-cog"></i>
                     <span>Account-Verwaltung</span>
                 </a>
+                <a href="/html/absences.html" class="sidebar-item">
+                    <i data-lucide="calendar-off"></i>
+                    <span>Abwesenheiten</span>
+                </a>
             </nav>
             
             <div class="sidebar-footer">
@@ -261,6 +265,10 @@
                 Permissions.initializeUI();
             }
             
+            // Initialize Lucide icons AFTER permissions are set
+            // This ensures icons in permission-hidden elements are rendered when shown
+            lucide.createIcons();
+            
             // Initialize account manager AFTER auth is confirmed
             if (typeof AccountManager !== 'undefined') {
                 await AccountManager.init();
@@ -272,10 +280,7 @@
                 sidebarLogoutButton.addEventListener('click', async function() {
                     await Auth.logout();
                 });
-            }
-            
-            // Initialize Lucide icons
-            lucide.createIcons();
+            };
         });
     </script>
 </body>

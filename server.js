@@ -31,6 +31,7 @@ const { requirePermission } = require('./middleware/permissionCheck');
 const authRoutes = require('./routes/auth');
 const accountRoutes = require('./routes/account');
 const adminRoutes = require('./routes/admin');
+const absencesRoutes = require('./routes/absences');
 const { ensureDefaultAdmin } = require('./routes/users');
 
 // Validate environment variables
@@ -142,6 +143,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api/auth', authRoutes);
 app.use('/api/account', accountRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/absences', absencesRoutes);
 
 // CSRF token endpoint
 app.get('/api/csrf-token', csrfProtection, (req, res) => {
@@ -199,6 +201,15 @@ app.get('/account.html', (req, res) => {
 // Protected route for account management (admin only)
 app.get('/html/admin/accounts.html', requirePermission(['manage_accounts', 'view_accounts']), (req, res) => {
     res.sendFile(path.join(__dirname, 'html/admin/accounts.html'));
+});
+
+// Protected route for absences
+app.get('/html/absences.html', (req, res) => {
+    // Check if user is authenticated
+    if (!req.session || !req.session.userId) {
+        return res.redirect('/');
+    }
+    res.sendFile(path.join(__dirname, 'html/absences.html'));
 });
 
 // 404 handler
