@@ -79,7 +79,7 @@ function validateAbsenceDates(startDate, endDate) {
     }
     
     // Check if duration is at least 3 days
-    const durationInDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    const durationInDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
     if (durationInDays < 3) {
         return { valid: false, error: 'Abwesenheit muss mindestens 3 Tage dauern' };
     }

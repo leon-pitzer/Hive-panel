@@ -127,7 +127,7 @@ const AbsencesManager = (function() {
                 return;
             }
             
-            const durationInDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+            const durationInDays = Math.floor((end - start) / (1000 * 60 * 60 * 24));
             if (durationInDays < 3) {
                 showToast('Abwesenheit muss mindestens 3 Tage dauern', 'error');
                 return;
