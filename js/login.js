@@ -29,8 +29,90 @@
         const errorMessage = document.getElementById('error-message');
         const infoMessage = document.getElementById('info-message');
         
+        // Get card elements
+        const loginCard = document.getElementById('login-card');
+        const registerCard = document.getElementById('register-card');
+        const registerToggle = document.getElementById('register-toggle');
+        const loginToggle = document.getElementById('login-toggle');
+        
+        // Get info popup elements
+        const infoToggle = document.getElementById('info-toggle');
+        const infoPopup = document.getElementById('info-popup');
+        const infoClose = document.getElementById('info-close');
+        
         // Handle form submission
         loginForm.addEventListener('submit', handleLogin);
+        
+        // Setup info popup toggle
+        if (infoToggle && infoPopup && infoClose) {
+            infoToggle.addEventListener('click', function() {
+                infoPopup.classList.remove('hidden');
+            });
+            
+            infoClose.addEventListener('click', function() {
+                infoPopup.classList.add('hidden');
+            });
+            
+            // Close popup when clicking outside
+            infoPopup.addEventListener('click', function(e) {
+                if (e.target === infoPopup) {
+                    infoPopup.classList.add('hidden');
+                }
+            });
+        }
+        
+        // Setup login/register toggle
+        if (registerToggle && loginCard && registerCard) {
+            registerToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                switchToRegister();
+            });
+        }
+        
+        if (loginToggle && loginCard && registerCard) {
+            loginToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                switchToLogin();
+            });
+        }
+        
+        /**
+         * Switch to registration form
+         */
+        function switchToRegister() {
+            loginCard.classList.add('slide-out-left');
+            
+            setTimeout(() => {
+                loginCard.classList.add('hidden');
+                loginCard.classList.remove('slide-out-left');
+                
+                registerCard.classList.remove('hidden');
+                registerCard.classList.add('slide-in-right');
+                
+                setTimeout(() => {
+                    registerCard.classList.remove('slide-in-right');
+                }, 500);
+            }, 500);
+        }
+        
+        /**
+         * Switch to login form
+         */
+        function switchToLogin() {
+            registerCard.classList.add('slide-out-right');
+            
+            setTimeout(() => {
+                registerCard.classList.add('hidden');
+                registerCard.classList.remove('slide-out-right');
+                
+                loginCard.classList.remove('hidden');
+                loginCard.classList.add('slide-in-left');
+                
+                setTimeout(() => {
+                    loginCard.classList.remove('slide-in-left');
+                }, 500);
+            }, 500);
+        }
         
         /**
          * Loads reCAPTCHA configuration from server

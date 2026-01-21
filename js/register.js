@@ -17,13 +17,13 @@
 
         // Get form elements
         const registerForm = document.getElementById('register-form');
-        const usernameInput = document.getElementById('username');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const confirmPasswordInput = document.getElementById('confirm-password');
+        const usernameInput = document.getElementById('register-username');
+        const emailInput = document.getElementById('register-email');
+        const passwordInput = document.getElementById('register-password');
+        const confirmPasswordInput = document.getElementById('register-confirm-password');
         const registerButton = document.getElementById('register-button');
-        const errorMessage = document.getElementById('error-message');
-        const infoMessage = document.getElementById('info-message');
+        const errorMessage = document.getElementById('register-error-message');
+        const infoMessage = document.getElementById('register-info-message');
         const passwordStrengthDiv = document.getElementById('password-strength');
         
         // Handle password strength validation
@@ -184,10 +184,13 @@
                     registerForm.reset();
                     passwordStrengthDiv.classList.add('hidden');
                     
-                    // Redirect to login after delay
+                    // Switch back to login after delay
                     setTimeout(() => {
-                        window.location.href = '/';
-                    }, 5000);
+                        const loginToggle = document.getElementById('login-toggle');
+                        if (loginToggle) {
+                            loginToggle.click();
+                        }
+                    }, 3000);
                 } else {
                     // Failed registration
                     setLoading(false);
