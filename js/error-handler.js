@@ -6,6 +6,9 @@
 (function() {
     'use strict';
     
+    // Configuration
+    const TOAST_DURATION_MS = 3000; // Duration to show toast messages
+    
     // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', function(event) {
         console.error('Unhandled promise rejection:', event.reason);
@@ -45,7 +48,7 @@
             
             setTimeout(() => {
                 toast.classList.remove('show');
-            }, 3000);
+            }, TOAST_DURATION_MS);
         } else {
             // Fallback to console if toast doesn't exist
             console.log(`[${type.toUpperCase()}] ${message}`);
